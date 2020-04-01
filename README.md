@@ -2,6 +2,10 @@
 
 > beautiful or else.
 
+**bore** lets you write extendible, reusable, and stylistically consistent
+visualizations. We're using it for our interactive graphics at the [Michigan
+Daily](https://michigandaily.com).
+
 ## Installation
 
 Minified CSS and JS files are in `dist/`.
@@ -14,10 +18,6 @@ Depends on:
 - [d3-annotations](https://d3-annotation.susielu.com/) for annotations
 
 ## Usage
-
-**bore** lets you write extendible, reusable, and stylistically consistent
-visualizations. We're using it for our interactive graphics at the [Michigan
-Daily](https://michigandaily.com).
 
 ### Example
 
