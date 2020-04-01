@@ -6,6 +6,10 @@
 visualizations. We're using it for our interactive graphics at the [Michigan
 Daily](https://michigandaily.com).
 
+<p align="center">
+  <img width="300" src="https://imgur.com/HyMdqda.png">
+</p>
+
 ## Installation
 
 Minified CSS and JS files are in `dist/`.
