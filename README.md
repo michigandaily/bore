@@ -1,0 +1,4 @@
+# bore
+
+> beautiful or else.
+
