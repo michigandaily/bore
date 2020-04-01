@@ -1,0 +1,40 @@
+figure.vis {
+  font-family: "Roboto Condensed", "Open Sans", sans-serif;
+}
+
+figure.vis svg {
+    max-width: 100%;
+    /* border: 1px solid #374567; */
+}
+
+figure.vis .title-text {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+figure.vis .subtitle-text {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+figure.vis .label-text {
+    font-size: 0.8rem;
+}
+
+figure.vis text.annotation-note-label, text.hover-label {
+    font-size: 0.6rem;
+}
+
+figure.vis .credit-text {
+    font-size: 10px;
+}
+
+figure.vis .domain {
+    display: none;
+}
+
+.credit {
+  margin-right: 75px;
+  text-align: right;
+}
+
