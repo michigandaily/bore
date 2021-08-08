@@ -5,7 +5,7 @@
   "main": "dist/index.esm.js",
   "type": "module",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c -w"
   },
   "repository": "https://github.com/MichiganDaily/bore",
   "author": {
