@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 
 export function barChart() {
-  let width, height;
-  let margin = { top: 0, right: 40, bottom: 0, left: 40 }; 
-  let x, y, color;
+  let width, height = 150;
+  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
+  let x, y, color = () => "steelblue";
   let label = d => d[1];
 
   const bar = g => g.append("rect")
@@ -22,25 +22,23 @@ export function barChart() {
 
   const init = svg => {
     const data = d3.select(svg).datum();
+
     if (width === undefined)
       width = svg.parentNode.clientWidth;
-    if (height === undefined)
-      height = 100;
     if (x === undefined)
       x = d3.scaleLinear()
-        .domain([0, d3.max(data.values())]).nice()
-        .range([margin.left, width - margin.right]);
+        .domain([0, d3.max(data.values())]).nice();
     if (y === undefined)
       y = d3.scaleBand()
         .domain(data.keys())
-        .range([height - margin.bottom, margin.top])
-        .padding(0.3)
-    if (color === undefined)
-      color = () => "steelblue";
+        .padding(0.3);
+
+    x.range([margin.left, width - margin.right]);
+    y.range([height - margin.bottom, margin.top]);
   }
 
   function main(selection) {
-    selection.each(function(data) {
+    selection.each(function (data) {
       init(this);
       const svg = d3.select(this)
         .attr("height", height);
@@ -59,25 +57,38 @@ export function barChart() {
         });
 
       const xAxis = svg.append("g")
-        .attr("transform", `translate(0, ${height - margin.top})`)
-      
+        .attr("transform", `translate(0, ${margin.top})`)
+
+      const xSplit = xAxis.append("g")
+        .attr("stroke", "white")
+        .attr("stroke-width", 1);
+
       const labels = bind.join("g").call(barLabel);
 
       const render = () => {
         width = this.parentNode.clientWidth;
         x.range([margin.left, width - margin.right]);
+
         xAxis.call(g => {
-          g.call(d3.axisTop(x).tickSize(height - margin.top - margin.bottom))
+          g.call(d3.axisTop(x));
           g.select(".domain").remove();
-          g.selectAll(".tick text").remove();
-          g.selectAll(".tick line")
-            .attr("stroke", "white");
         });
+
+        xSplit.call(g => {
+          g.selectAll(".split")
+          .data(x.ticks())
+            .join("line")
+            .attr("class", "split")
+            .attr("x1", x).attr("x2", x)
+            .attr("y2", height - margin.bottom - margin.top)
+        });
+
+        const min = x.domain()[0];
 
         svg.attr("width", width);
         bars.selectAll("rect")
-          .attr("x", x(0))
-          .attr("width", d => x(d[1]) - x(0));
+          .attr("x", x(min))
+          .attr("width", d => x(d[1]) - x(min));
         labels.selectAll("text")
           .attr("x", d => x(d[1]));
       }
@@ -87,31 +98,31 @@ export function barChart() {
     });
   }
 
-  main.width = function(w) {
+  main.width = function (w) {
     return (arguments.length) ? (width = w, main) : width;
   }
 
-  main.height = function(h) {
+  main.height = function (h) {
     return (arguments.length) ? (height = h, main) : height;
   }
 
-  main.margin = function(m) {
+  main.margin = function (m) {
     return (arguments.length) ? (margin = m, main) : margin;
   }
 
-  main.xScale = function(_) {
+  main.xScale = function (_) {
     return (arguments.length) ? (x = _, main) : x;
   }
 
-  main.yScale = function(_) {
+  main.yScale = function (_) {
     return (arguments.length) ? (y = _, main) : y;
   }
 
-  main.color = function(c) {
+  main.color = function (c) {
     return (arguments.length) ? (color = c, main) : color;
   }
 
-  main.label = function(l) {
+  main.label = function (l) {
     return (arguments.length) ? (label = l, main) : label;
   }
 
