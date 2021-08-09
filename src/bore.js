@@ -5,13 +5,16 @@ export function barChart() {
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
   let x, y, color = () => "steelblue";
   let label = d => d[1];
+  let resize = true;
 
   const bar = g => g.append("rect")
+    .attr("class", "bar")
     .attr("y", d => y(d[0]))
     .attr("height", y.bandwidth())
     .attr("fill", d => color(d[0]));
 
   const barLabel = g => g.append("text")
+    .attr("class", "label")
     .attr("dx", "0.25em")
     .attr("y", d => y(d[0]) + y.bandwidth() / 2)
     .attr("alignment-baseline", "central")
@@ -38,12 +41,12 @@ export function barChart() {
   }
 
   function main(selection) {
-    selection.each(function (data) {
+    selection.each(function (data, index) {
       init(this);
       const svg = d3.select(this)
         .attr("height", height);
 
-      const bind = svg.selectAll(".bar").data(data);
+      const bind = svg.selectAll(".bind").data(data);
       const bars = bind.join("g").call(bar);
 
       svg.append("g")
@@ -57,35 +60,35 @@ export function barChart() {
         });
 
       const xAxis = svg.append("g")
-        .attr("transform", `translate(0, ${margin.top})`)
+        .attr("transform", `translate(0, ${margin.top})`);
 
       const xSplit = xAxis.append("g")
         .attr("stroke", "white")
-        .attr("stroke-width", 1);
+        .attr("stroke-width", 1)
 
       const labels = bind.join("g").call(barLabel);
 
       const render = () => {
-        width = this.parentNode.clientWidth;
-        x.range([margin.left, width - margin.right]);
+        let cw = this.parentNode.clientWidth;
+        let w = (resize) ? cw : (cw < width) ? cw : width;
 
-        xAxis.call(g => {
-          g.call(d3.axisTop(x));
-          g.select(".domain").remove();
-        });
+        x.range([margin.left, w - margin.right]);
 
-        xSplit.call(g => {
-          g.selectAll(".split")
+        xAxis
+          .call(d3.axisTop(x))
+          .select(".domain").remove();
+
+        xSplit
+          .selectAll(".split")
           .data(x.ticks())
-            .join("line")
-            .attr("class", "split")
-            .attr("x1", x).attr("x2", x)
-            .attr("y2", height - margin.bottom - margin.top)
-        });
+          .join("line")
+          .attr("class", "split")
+          .attr("x1", x).attr("x2", x)
+          .attr("y2", height - margin.bottom - margin.top);
 
         const min = x.domain()[0];
 
-        svg.attr("width", width);
+        svg.attr("width", w);
         bars.selectAll("rect")
           .attr("x", x(min))
           .attr("width", d => x(d[1]) - x(min));
@@ -94,7 +97,7 @@ export function barChart() {
       }
 
       render();
-      window.onresize = render
+      d3.select(window).on(`resize.${index}`, render);
     });
   }
 
@@ -124,6 +127,10 @@ export function barChart() {
 
   main.label = function (l) {
     return (arguments.length) ? (label = l, main) : label;
+  }
+
+  main.resize = function (r) {
+    return (arguments.length) ? (resize = r, main) : resize;
   }
 
   return main;

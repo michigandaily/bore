@@ -45,8 +45,9 @@ TODO
 
 ### Build `bore` and serve `cookie`
 
-1. In `bore`, run `yarn build`.
+1. In `bore`, run `yarn watch`.
    - This command will watch for changes in `src` and generate build files in `dist`.
+   - Alternatively, run `yarn build` to build once without watching for changes.
 2. In `cookie`, run `make dev`.
    - Whenever changes are made in `bore`, the `cookie` server will reload to reflect those changes.
 
