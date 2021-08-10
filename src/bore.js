@@ -15,7 +15,7 @@ export function barChart() {
     g.call(d3.axisLeft(scale).tickSize(0));
     g.select(".domain").remove();
     g.selectAll(".tick text")
-      .attr("font-weight", "bold")
+      .attr("font-weight", "bold");
     // .call(wrap, 150);
   }
 

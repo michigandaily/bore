@@ -11,7 +11,7 @@ We use it for our data graphics at [The Michigan Daily](https://michigandaily.co
 1. Add `bore` as a dependency:
 
    ```bash
-   yarn add https://github.com/MichiganDaily/bore.git
+   yarn add "https://github.com/MichiganDaily/bore.git#dev"
    ```
 
 2. Import `bore`:
@@ -43,15 +43,15 @@ TODO
    import * as bore from "bore";
    ```
 
-### Build `bore` and serve `cookie`
+### Serve `cookie`
 
-1. In `bore`, run `yarn watch`.
-   - This command will watch for changes in `src` and generate build files in `dist`.
-   - Alternatively, run `yarn build` to build once without watching for changes.
-2. In `cookie`, run `make dev`.
-   - Whenever changes are made in `bore`, the `cookie` server will reload to reflect those changes.
+In `cookie`, run `make dev`.
+
+Whenever changes are made in `bore`, the `cookie` server will reload to reflect those changes.
 
 ### Unlink `bore` and `cookie`
+
+When finished developing, unlink the repositories.
 
 1. In `bore`, run `yarn unlink`.
 2. In `cookie`, run `yarn unlink "bore"`.
