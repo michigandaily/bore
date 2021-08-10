@@ -2,7 +2,7 @@
 
 > beautiful or else.
 
-`bore` lets you write extendible, reusable, and stylistically consistent visualizations.
+`bore` is a library built on top of [D3](https://github.com/d3/d3) that lets you create extendible, reusable, and stylistically consistent visualizations. It follows from the article ["Towards Reusable Charts"](https://bost.ocks.org/mike/chart/) written by [Mike Bostock](https://github.com/d3/d3).
 
 We use it for our data graphics at [The Michigan Daily](https://michigandaily.com).
 

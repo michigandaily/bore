@@ -1,20 +1,40 @@
 import * as d3 from "d3";
 
 export function barChart() {
-  let width, height = 150;
+  let width, height = 150, x, y;
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
-  let x, y, color = () => "steelblue";
-  let label = d => d[1];
+  let color = () => "steelblue", label = d => d[1];
   let resize = true;
 
+  const xAxis = scale => g => {
+    g.call(d3.axisTop(scale));
+    g.select(".domain").remove();
+  }
+
+  const yAxis = scale => g => {
+    g.call(d3.axisLeft(scale).tickSize(0));
+    g.select(".domain").remove();
+    g.selectAll(".tick text")
+      .attr("font-weight", "bold")
+    // .call(wrap, 150);
+  }
+
+  const xSplit = scale => g => {
+    g.selectAll("line")
+      .data(scale.ticks())
+      .join("line")
+      .attr("stroke", "white")
+      .attr("stroke-width", 1)
+      .attr("x1", scale).attr("x2", scale)
+      .attr("y2", height - margin.bottom - margin.top);
+  }
+
   const bar = g => g.append("rect")
-    .attr("class", "bar")
     .attr("y", d => y(d[0]))
     .attr("height", y.bandwidth())
     .attr("fill", d => color(d[0]));
 
   const barLabel = g => g.append("text")
-    .attr("class", "label")
     .attr("dx", "0.25em")
     .attr("y", d => y(d[0]) + y.bandwidth() / 2)
     .attr("alignment-baseline", "central")
@@ -43,55 +63,47 @@ export function barChart() {
   function main(selection) {
     selection.each(function (data, index) {
       init(this);
+
       const svg = d3.select(this)
         .attr("height", height);
 
-      const bind = svg.selectAll(".bind").data(data);
-      const bars = bind.join("g").call(bar);
+      const bind = svg.selectAll(".bind")
+        .data(data);
+
+      const bars = bind.join("g")
+        .attr("class", "bar")
+        .call(bar);
 
       svg.append("g")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(g => {
-          g.call(d3.axisLeft(y).tickSize(0));
-          g.select(".domain").remove();
-          g.selectAll(".tick text")
-            .attr("font-weight", "bold")
-          // .call(wrap, 150)
-        });
+        .call(yAxis(y));
 
-      const xAxis = svg.append("g")
+      const xAxisGroup = svg.append("g")
         .attr("transform", `translate(0, ${margin.top})`);
 
-      const xSplit = xAxis.append("g")
-        .attr("stroke", "white")
-        .attr("stroke-width", 1)
+      const xSplitGroup = xAxisGroup.append("g")
+        .attr("class", "split");
 
-      const labels = bind.join("g").call(barLabel);
+      const labels = bind.join("g")
+        .attr("class", "label")
+        .call(barLabel);
 
       const render = () => {
-        let cw = this.parentNode.clientWidth;
-        let w = (resize) ? cw : (cw < width) ? cw : width;
+        const cw = this.parentNode.clientWidth;
+        const w = (resize) ? cw : (cw < width) ? cw : width;
 
+        svg.attr("width", w);
         x.range([margin.left, w - margin.right]);
 
-        xAxis
-          .call(d3.axisTop(x))
-          .select(".domain").remove();
-
-        xSplit
-          .selectAll(".split")
-          .data(x.ticks())
-          .join("line")
-          .attr("class", "split")
-          .attr("x1", x).attr("x2", x)
-          .attr("y2", height - margin.bottom - margin.top);
+        xAxisGroup.call(xAxis(x));
+        xSplitGroup.call(xSplit(x));
 
         const min = x.domain()[0];
 
-        svg.attr("width", w);
         bars.selectAll("rect")
           .attr("x", x(min))
           .attr("width", d => x(d[1]) - x(min));
+
         labels.selectAll("text")
           .attr("x", d => x(d[1]));
       }
