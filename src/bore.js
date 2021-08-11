@@ -75,14 +75,17 @@ export function barChart() {
         .call(bar);
 
       svg.append("g")
+        .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`)
         .call(yAxis(y));
 
       const xAxisGroup = svg.append("g")
+        .attr("class", "x-axis")
         .attr("transform", `translate(0, ${margin.top})`);
 
-      const xSplitGroup = xAxisGroup.append("g")
-        .attr("class", "split");
+      const xSplitGroup = svg.append("g")
+        .attr("class", "split")
+        .attr("transform", `translate(0, ${margin.top})`);
 
       const labels = bind.join("g")
         .attr("class", "label")
