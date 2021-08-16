@@ -1,7 +1,8 @@
 import * as d3 from "d3";
 
 export function barChart() {
-  let width, height = 150, x, y;
+  let width, height = 150;
+  let x = d3.local(), y, xScale, yScale;
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
   let color = () => "steelblue", label = d => d[1];
   let resize = true;
@@ -48,16 +49,17 @@ export function barChart() {
 
     if (width === undefined)
       width = svg.parentNode.clientWidth;
-    if (x === undefined)
-      x = d3.scaleLinear()
-        .domain([0, d3.max(data.values())]).nice();
-    if (y === undefined)
-      y = d3.scaleBand()
-        .domain(data.keys())
-        .padding(0.3);
 
-    x.range([margin.left, width - margin.right]);
-    y.range([height - margin.bottom, margin.top]);
+    x.set(svg, ((xScale === undefined)
+      ? d3.scaleLinear().domain([0, d3.max(data.values())]).nice()
+      : xScale)
+      .range([margin.left, width - margin.right])
+    );
+
+    y = ((yScale === undefined)
+      ? d3.scaleBand().domain(data.keys()).padding(0.3)
+      : yScale)
+      .range([height - margin.bottom, margin.top]);
   }
 
   function main(selection) {
@@ -96,19 +98,21 @@ export function barChart() {
         const w = (resize) ? cw : (cw < width) ? cw : width;
 
         svg.attr("width", w);
-        x.range([margin.left, w - margin.right]);
 
-        xAxisGroup.call(xAxis(x));
-        xSplitGroup.call(xSplit(x));
+        const _x = x.get(this)
+          .range([margin.left, w - margin.right]);
 
-        const min = x.domain()[0];
+        xAxisGroup.call(xAxis(_x));
+        xSplitGroup.call(xSplit(_x));
+
+        const min = _x.domain()[0];
 
         bars.selectAll("rect")
-          .attr("x", x(min))
-          .attr("width", d => x(d[1]) - x(min));
+          .attr("x", _x(min))
+          .attr("width", d => _x(d[1]) - _x(min));
 
         labels.selectAll("text")
-          .attr("x", d => x(d[1]));
+          .attr("x", d => _x(d[1]));
       }
 
       render();
@@ -129,11 +133,11 @@ export function barChart() {
   }
 
   main.xScale = function (_) {
-    return (arguments.length) ? (x = _, main) : x;
+    return (arguments.length) ? (xScale = _, main) : xScale;
   }
 
   main.yScale = function (_) {
-    return (arguments.length) ? (y = _, main) : y;
+    return (arguments.length) ? (yScale = _, main) : yScale;
   }
 
   main.color = function (c) {
