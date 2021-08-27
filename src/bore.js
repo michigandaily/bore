@@ -8,7 +8,7 @@ export function barChart() {
   let color = () => "steelblue", label = d => d[1];
   let resize = true;
 
-  const xAxis = scale => g => {
+  let xAxis = scale => g => {
     g.call(d3.axisTop(scale));
     g.select(".domain").remove();
   }
@@ -136,6 +136,10 @@ export function barChart() {
 
   main.xScale = function (_) {
     return (arguments.length) ? (xScale = _, main) : xScale;
+  }
+
+  main.xAxis = function (f) {
+    return (arguments.length) ? (xAxis = f, main) : xAxis;
   }
 
   main.yScale = function (_) {
