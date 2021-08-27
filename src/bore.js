@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { wrap } from "./util.js";
 
 export function barChart() {
   let width, height = 150;
@@ -15,9 +16,10 @@ export function barChart() {
   const yAxis = scale => g => {
     g.call(d3.axisLeft(scale).tickSize(0));
     g.select(".domain").remove();
-    g.selectAll(".tick text")
+    let text = g.selectAll(".tick text")
       .attr("font-weight", "bold");
-    // .call(wrap, 150);
+
+    margin.left = wrap(text, 100) + 5;
   }
 
   const xSplit = scale => g => {
@@ -69,17 +71,17 @@ export function barChart() {
       const svg = d3.select(this)
         .attr("height", height);
 
+      svg.append("g")
+        .call(yAxis(y))
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${margin.left}, 0)`);
+
       const bind = svg.selectAll(".bind")
         .data(data);
 
       const bars = bind.join("g")
         .attr("class", "bar")
         .call(bar);
-
-      svg.append("g")
-        .attr("class", "y-axis")
-        .attr("transform", `translate(${margin.left}, 0)`)
-        .call(yAxis(y));
 
       const xAxisGroup = svg.append("g")
         .attr("class", "x-axis")

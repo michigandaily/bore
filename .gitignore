@@ -3,3 +3,6 @@ node_modules/
 
 # macOS
 .DS_Store
+
+# Visual Studio Code
+.vscode
