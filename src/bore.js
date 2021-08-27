@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { wrap } from "./util.js";
+import { xAxisTop, yAxisLeft } from "./axis.js";
 
 export function barChart() {
   let width, height = 150;
@@ -8,23 +9,12 @@ export function barChart() {
   let color = () => "steelblue", label = d => d[1];
   let resize = true;
 
-  let xAxis = scale => g => {
-    g.call(d3.axisTop(scale));
-    g.select(".domain").remove();
-  }
+  let xAxis = xAxisTop;
+  const yAxis = yAxisLeft;
 
-  const yAxis = scale => g => {
-    g.call(d3.axisLeft(scale).tickSize(0));
-    g.select(".domain").remove();
-    let text = g.selectAll(".tick text")
-      .attr("font-weight", "bold");
-
-    margin.left = wrap(text, 100) + 5;
-  }
-
-  const xSplit = scale => g => {
+  const xSplit = width => scale => g => {
     g.selectAll("line")
-      .data(scale.ticks())
+      .data(scale.ticks(width / 80))
       .join("line")
       .attr("stroke", "white")
       .attr("stroke-width", 1)
@@ -73,6 +63,10 @@ export function barChart() {
 
       svg.append("g")
         .call(yAxis(y))
+        .call(g => {
+          let text = g.selectAll(".tick text");
+          margin.left = wrap(text, 100) + 5;
+        })
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
 
@@ -104,8 +98,8 @@ export function barChart() {
         const _x = x.get(this)
           .range([margin.left, w - margin.right]);
 
-        xAxisGroup.call(xAxis(_x));
-        xSplitGroup.call(xSplit(_x));
+        xAxisGroup.call(xAxis(w)(_x));
+        xSplitGroup.call(xSplit(w)(_x));
 
         const min = _x.domain()[0];
 
