@@ -20,14 +20,13 @@ export function barChart() {
       .data(scale.ticks(width / 80))
       .join(
         enter => enter.append("line")
-          .attr("stroke", "white")
-          .attr("stroke-width", 1)
           .attr("x1", scale).attr("x2", scale),
-        update => update
-          .attr("y2", height - margin.bottom - margin.top)
-          .transition().duration(1000)
+        update => ((redraw) ? update.transition().duration(1000) : update)
           .attr("x1", scale).attr("x2", scale)
       )
+      .attr("stroke", "white")
+      .attr("stroke-width", 1)
+      .attr("y2", height - margin.bottom - margin.top)
   }
 
   const bar = rect => rect
