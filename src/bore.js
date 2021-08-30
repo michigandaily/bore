@@ -2,12 +2,15 @@ import * as d3 from "d3";
 import { wrap } from "./util.js";
 import { xAxisTop, yAxisLeft } from "./axis.js";
 
+export * from "./color.js";
+
 export function barChart() {
   let width, height = 150;
   let x = d3.local(), y, xScale, yScale;
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
   let color = () => "steelblue", label = d => d[1];
   let resize = true;
+  let redraw = false;
 
   let xAxis = xAxisTop;
   let yAxis = yAxisLeft;
@@ -15,19 +18,26 @@ export function barChart() {
   const xSplit = (width, scale) => g => {
     g.selectAll("line")
       .data(scale.ticks(width / 80))
-      .join("line")
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .attr("x1", scale).attr("x2", scale)
-      .attr("y2", height - margin.bottom - margin.top);
+      .join(
+        enter => enter.append("line")
+          .attr("stroke", "white")
+          .attr("stroke-width", 1)
+          .attr("x1", scale).attr("x2", scale),
+        update => update
+          .attr("y2", height - margin.bottom - margin.top)
+          .transition().duration(1000)
+          .attr("x1", scale).attr("x2", scale)
+      )
   }
 
-  const bar = g => g.append("rect")
+  const bar = rect => rect
+    .attr("class", "bar")
     .attr("y", d => y(d[0]))
     .attr("height", y.bandwidth())
     .attr("fill", d => color(d[0]));
 
-  const barLabel = g => g.append("text")
+  const barLabel = text => text
+    .attr("class", "label")
     .attr("dx", "0.25em")
     .attr("y", d => y(d[0]) + y.bandwidth() / 2)
     .attr("alignment-baseline", "central")
@@ -61,7 +71,7 @@ export function barChart() {
       const svg = d3.select(this)
         .attr("height", height);
 
-      svg.append("g")
+      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
         .call(yAxis(y))
         .call(g => {
           let text = g.selectAll(".tick text");
@@ -70,23 +80,22 @@ export function barChart() {
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
 
-      const bind = svg.selectAll(".bind")
-        .data(data);
-
-      const bars = bind.join("g")
-        .attr("class", "bar")
+      const bars = svg.selectAll(".bar")
+        .data(data)
+        .join("rect")
         .call(bar);
 
-      const xAxisGroup = svg.append("g")
+      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${margin.top})`);
 
-      const xSplitGroup = svg.append("g")
-        .attr("class", "split")
+      const xSplitGroup = ((redraw) ? svg.select(".x-split") : svg.append("g"))
+        .attr("class", "x-split")
         .attr("transform", `translate(0, ${margin.top})`);
 
-      const labels = bind.join("g")
-        .attr("class", "label")
+      const labels = svg.selectAll(".label")
+        .data(data)
+        .join("text")
         .call(barLabel);
 
       const render = () => {
@@ -98,16 +107,16 @@ export function barChart() {
         const _x = x.get(this)
           .range([margin.left, w - margin.right]);
 
-        xAxisGroup.call(xAxis(w, _x));
+        xAxisGroup.call(xAxis(w, _x, redraw));
         xSplitGroup.call(xSplit(w, _x));
 
         const min = _x.domain()[0];
 
-        bars.selectAll("rect")
+        ((redraw) ? bars.transition().duration(1000) : bars)
           .attr("x", _x(min))
           .attr("width", d => _x(d[1]) - _x(min));
 
-        labels.selectAll("text")
+        ((redraw) ? labels.transition().duration(1000) : labels)
           .attr("x", d => _x(d[1]));
       }
 
@@ -154,6 +163,11 @@ export function barChart() {
 
   main.resize = function (r) {
     return (arguments.length) ? (resize = r, main) : resize;
+  }
+
+  main.redraw = function () {
+    redraw = true;
+    return main;
   }
 
   return main;
