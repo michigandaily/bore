@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-export const xAxisTop = width => scale => g => {
+export const xAxisTop = (width, scale) => g => {
   g.call(d3.axisTop(scale).ticks(width / 80));
   g.select(".domain").remove();
 }

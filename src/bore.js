@@ -10,9 +10,9 @@ export function barChart() {
   let resize = true;
 
   let xAxis = xAxisTop;
-  const yAxis = yAxisLeft;
+  let yAxis = yAxisLeft;
 
-  const xSplit = width => scale => g => {
+  const xSplit = (width, scale) => g => {
     g.selectAll("line")
       .data(scale.ticks(width / 80))
       .join("line")
@@ -98,8 +98,8 @@ export function barChart() {
         const _x = x.get(this)
           .range([margin.left, w - margin.right]);
 
-        xAxisGroup.call(xAxis(w)(_x));
-        xSplitGroup.call(xSplit(w)(_x));
+        xAxisGroup.call(xAxis(w, _x));
+        xSplitGroup.call(xSplit(w, _x));
 
         const min = _x.domain()[0];
 
@@ -134,6 +134,10 @@ export function barChart() {
 
   main.xAxis = function (f) {
     return (arguments.length) ? (xAxis = f, main) : xAxis;
+  }
+
+  main.yAxis = function (f) {
+    return (arguments.length) ? (yAxis = f, main) : yAxis;
   }
 
   main.yScale = function (_) {
