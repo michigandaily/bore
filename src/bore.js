@@ -171,3 +171,139 @@ export function barChart() {
 
   return main;
 }
+
+export function groupedBarChart() {
+  let width, height = 200;
+  let x = d3.local(), y0, y1, xScale, yScale;
+  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
+  let resize = true, redraw = false;
+  let color = () => "steelblue";
+
+  let xAxis = xAxisTop;
+  let yAxis = yAxisLeft;
+
+  const init = svg => {
+    const data = d3.select(svg).datum();
+    const keys = Object.keys(data.values().next().value);
+
+    if (width === undefined)
+      width = svg.parentNode.clientWidth;
+
+    x.set(svg, ((xScale === undefined)
+      ? d3.scaleLinear().domain(
+        [0, d3.max(data, d => d3.max(Object.entries(d[1]), d => +d[1]))]
+      ).nice()
+      : xScale)
+      .range([margin.left, width - margin.right])
+    );
+
+    y0 = d3.scaleBand()
+      .domain(data.keys())
+      .range([height - margin.bottom, margin.top])
+      .padding(0.3);
+
+    y1 = d3.scaleBand()
+      .domain(keys)
+      .range([0, y0.bandwidth()]);
+  }
+
+  function main(selection) {
+    selection.each(function (data, index) {
+      init(this);
+
+      const svg = d3.select(this)
+        .attr("height", height);
+
+      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
+        .call(yAxis(y0))
+        .call(g => {
+          let text = g.selectAll(".tick text");
+          margin.left = wrap(text, 50) + 5;
+        })
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${margin.left}, 0)`);
+
+      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0, ${margin.top})`);
+
+      const bars = svg.selectAll(".bargroup")
+        .data(data)
+        .join("g")
+        .attr("class", "bargroup")
+        .attr("transform", d => `translate(0, ${y0(d[0])})`)
+        .selectAll("rect")
+        .data(d => Object.entries(d[1]))
+        .join("rect")
+        .attr("y", d => y1(d[0]))
+        .attr("height", y1.bandwidth())
+        .attr("fill", d => color(d[0]))
+
+      const render = () => {
+        const cw = this.parentNode.clientWidth;
+        const w = (resize) ? cw : (cw < width) ? cw : width;
+
+        svg.attr("width", w);
+        const _x = x.get(this)
+          .range([margin.left, w - margin.right]);
+
+        xAxisGroup.call(xAxis(w, _x, redraw));
+        const min = _x.domain()[0];
+
+        ((redraw) ? bars.transition().duration(1000) : bars)
+          .attr("x", _x(min))
+          .attr("width", d => _x(d[1]) - _x(min));
+      };
+
+      render();
+      d3.select(window).on(`resize.${index}`, render);
+    });
+  }
+
+  main.width = function (w) {
+    return (arguments.length) ? (width = w, main) : width;
+  }
+
+  main.height = function (h) {
+    return (arguments.length) ? (height = h, main) : height;
+  }
+
+  main.margin = function (m) {
+    return (arguments.length) ? (margin = m, main) : margin;
+  }
+
+  main.xScale = function (_) {
+    return (arguments.length) ? (xScale = _, main) : xScale;
+  }
+
+  main.xAxis = function (f) {
+    return (arguments.length) ? (xAxis = f, main) : xAxis;
+  }
+
+  main.yAxis = function (f) {
+    return (arguments.length) ? (yAxis = f, main) : yAxis;
+  }
+
+  main.color = function (c) {
+    return (arguments.length) ? (color = c, main) : color;
+  }
+
+  main.resize = function (r) {
+    return (arguments.length) ? (resize = r, main) : resize;
+  }
+
+  main.redraw = function () {
+    redraw = true;
+    return main;
+  }
+  
+  return main;
+}
+
+// export function stackedBarChart() {
+//   function main() {
+
+//   }
+
+//   return main;
+// }

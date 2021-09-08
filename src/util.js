@@ -6,13 +6,19 @@ const length = el => el.node().getComputedTextLength();
 // https://bl.ocks.org/mbostock/7555321
 export const wrap = (selection, w) => {
   let maxTextL = 0, maxSpanL = 0, l;
+
+  const lencomp = (text, context) => {
+    if ((l = length(text)) > context) {
+      context = l;
+    }
+    return context;
+  }
+
   selection.each(function () {
     let text = d3.select(this);
 
     // get the maximum possible length of a label
-    if ((l = length(text)) > maxTextL) {
-      maxTextL = l;
-    }
+    maxTextL = lencomp(text, maxTextL);
 
     let words = text.text().split(/\s+/).reverse();
     if (words.length === 1) return;
@@ -33,17 +39,17 @@ export const wrap = (selection, w) => {
         tspan.text(line.join(" "));
 
         // get the maximum length of a line
-        if ((l = length(tspan)) > maxSpanL) {
-          maxSpanL = l;
-        }
+        maxSpanL = lencomp(tspan, maxSpanL);
 
         line = [word];
         tspan = text
           .append("tspan")
           .attr("x", x)
           .attr("y", y)
-          .attr("dy", "1.1em")
+          .attr("dy", "1em")
           .text(word);
+
+        maxSpanL = lencomp(tspan, maxSpanL);
       }
     }
   });
