@@ -74,7 +74,7 @@ export function barChart() {
         .call(yAxis(y))
         .call(g => {
           let text = g.selectAll(".tick text");
-          margin.left = wrap(text, 100) + 5;
+          margin.left = wrap(text, 50) + 5;
         })
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
