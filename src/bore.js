@@ -33,7 +33,7 @@ export function barChart() {
     .attr("class", "bar")
     .attr("y", d => y(d[0]))
     .attr("height", y.bandwidth())
-    .attr("fill", d => color(d[0]));
+    .attr("fill", color);
 
   const barLabel = text => text
     .attr("class", "label")
@@ -237,7 +237,7 @@ export function groupedBarChart() {
         .join("rect")
         .attr("y", d => y1(d[0]))
         .attr("height", y1.bandwidth())
-        .attr("fill", d => color(d[0]))
+        .attr("fill", color);
 
       const render = () => {
         const cw = this.parentNode.clientWidth;
@@ -296,7 +296,7 @@ export function groupedBarChart() {
     redraw = true;
     return main;
   }
-  
+
   return main;
 }
 
