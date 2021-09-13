@@ -177,10 +177,20 @@ export function groupedBarChart() {
   let x = d3.local(), y0, y1, xScale, yScale;
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
   let resize = true, redraw = false;
-  let color = () => "steelblue";
+  let color = () => "steelblue", label = d => d[1];
 
   let xAxis = xAxisTop;
   let yAxis = yAxisLeft;
+
+  const barLabel = text => text
+    .attr("class", "label")
+    .attr("dx", "0.25em")
+    .attr("y", d => y1(d[0]) + y1.bandwidth() / 2)
+    .attr("alignment-baseline", "central")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 600)
+    .attr("font-size", 10)
+    .text(label);
 
   const init = svg => {
     const data = d3.select(svg).datum();
@@ -227,17 +237,26 @@ export function groupedBarChart() {
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${margin.top})`);
 
-      const bars = svg.selectAll(".bargroup")
+      const groups = svg.selectAll(".bargroup")
         .data(data)
         .join("g")
         .attr("class", "bargroup")
         .attr("transform", d => `translate(0, ${y0(d[0])})`)
+
+      const bars = groups
         .selectAll("rect")
         .data(d => Object.entries(d[1]))
         .join("rect")
         .attr("y", d => y1(d[0]))
         .attr("height", y1.bandwidth())
         .attr("fill", color);
+
+      const labels = groups
+        .selectAll("text")
+        .data(d => Object.entries(d[1]))
+        .join("text")
+        .attr("y", d => y1(d[0]))
+        .call(barLabel)
 
       const render = () => {
         const cw = this.parentNode.clientWidth;
@@ -253,6 +272,9 @@ export function groupedBarChart() {
         ((redraw) ? bars.transition().duration(1000) : bars)
           .attr("x", _x(min))
           .attr("width", d => _x(d[1]) - _x(min));
+
+        ((redraw) ? labels.transition().duration(1000) : labels)
+          .attr("x", d => _x(d[1]));
       };
 
       render();
@@ -286,6 +308,10 @@ export function groupedBarChart() {
 
   main.color = function (c) {
     return (arguments.length) ? (color = c, main) : color;
+  }
+
+  main.label = function (l) {
+    return (arguments.length) ? (label = l, main) : label;
   }
 
   main.resize = function (r) {
