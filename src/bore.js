@@ -12,6 +12,7 @@ export function barChart() {
   let color = () => "steelblue", label = d => d[1];
   let resize = true;
   let redraw = false;
+  let wrappx = 50;
 
   let xAxis = xAxisTop;
   let yAxis = yAxisLeft;
@@ -75,7 +76,7 @@ export function barChart() {
         .call(yAxis(y))
         .call(g => {
           let text = g.selectAll(".tick text");
-          margin.left += wrap(text, 50);
+          margin.left += wrap(text, wrappx);
         })
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
@@ -170,6 +171,10 @@ export function barChart() {
     return main;
   }
 
+  main.wrappx = function (px) {
+    return (arguments.length) ? (wrappx = px, main) : wrappx;
+  }
+
   return main;
 }
 
@@ -179,6 +184,7 @@ export function groupedBarChart() {
   let margin = { top: 20, right: 40, bottom: 20, left: 40 };
   let resize = true, redraw = false;
   let color = () => "steelblue", label = d => d[1];
+  let wrappx = 50;
 
   let xAxis = xAxisTop;
   let yAxis = yAxisLeft;
@@ -229,7 +235,7 @@ export function groupedBarChart() {
         .call(yAxis(y0))
         .call(g => {
           let text = g.selectAll(".tick text");
-          margin.left += wrap(text, 50);
+          margin.left += wrap(text, wrappx);
         })
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
@@ -322,6 +328,10 @@ export function groupedBarChart() {
   main.redraw = function () {
     redraw = true;
     return main;
+  }
+
+  main.wrappx = function (px) {
+    return (arguments.length) ? (wrappx = px, main) : wrappx;
   }
 
   return main;
