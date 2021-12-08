@@ -3,6 +3,7 @@ import { wrap } from "./util.js";
 import { xAxisTop, yAxisLeft } from "./axis.js";
 
 export * from "./color.js";
+export * from "./util.js";
 
 export function barChart() {
   let width, height = 150;
