@@ -1,41 +1,109 @@
+/* eslint-disable func-names */
+/* eslint-disable no-return-assign */
+/* eslint-disable no-underscore-dangle */
 import * as d3 from "d3";
-import { wrap } from "./util.js";
-import { xAxisTop, yAxisLeft } from "./axis.js";
+import { wrap } from "./util";
+import { xAxisTop, yAxisLeft } from "./axis";
 
-export * from "./color.js";
-export * from "./util.js";
+export * from "./color";
+export * from "./util";
+
+export class Visual {
+  constructor() {
+    let width;
+    let height = 150;
+    let xScale;
+    let yScale;
+    let margin = { top: 20, right: 40, bottom: 20, left: 40 };
+    let color = () => "steelblue"; let label = d => d[1];
+    let resize = true;
+    let redraw = false;
+    let wrappx = 50;
+
+    let xAxis = xAxisTop;
+    let yAxis = yAxisLeft;
+
+    this.main = function () { };
+
+    this.main.width = function (w) {
+      return (arguments.length) ? (width = w, this) : width;
+    };
+
+    this.main.height = function (h) {
+      return (arguments.length) ? (height = h, this) : height;
+    };
+
+    this.main.margin = function (m) {
+      return (arguments.length) ? (margin = m, this) : margin;
+    };
+
+    this.main.xScale = function (_) {
+      return (arguments.length) ? (xScale = _, this) : xScale;
+    };
+
+    this.main.xAxis = function (f) {
+      return (arguments.length) ? (xAxis = f, this) : xAxis;
+    };
+
+    this.main.yAxis = function (f) {
+      return (arguments.length) ? (yAxis = f, this) : yAxis;
+    };
+
+    this.main.yScale = function (_) {
+      return (arguments.length) ? (yScale = _, this) : yScale;
+    };
+
+    this.main.color = function (c) {
+      return (arguments.length) ? (color = c, this) : color;
+    };
+
+    this.main.label = function (l) {
+      return (arguments.length) ? (label = l, this) : label;
+    };
+
+    this.main.resize = function (r) {
+      return (arguments.length) ? (resize = r, this) : resize;
+    };
+
+    this.main.redraw = function (r) {
+      return (arguments.length) ? (redraw = r, this) : redraw;
+    };
+
+    this.main.wrappx = function (px) {
+      return (arguments.length) ? (wrappx = px, this) : wrappx;
+    };
+
+    this.main.draw = function () {
+      redraw = true;
+      return this;
+    };
+  }
+}
 
 export function barChart() {
-  let width, height = 150;
-  let x = d3.local(), y, xScale, yScale;
-  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
-  let color = () => "steelblue", label = d => d[1];
-  let resize = true;
-  let redraw = false;
-  let wrappx = 50;
+  const v = new Visual();
+  const x = d3.local();
+  let y;
 
-  let xAxis = xAxisTop;
-  let yAxis = yAxisLeft;
-
-  const xSplit = (width, scale) => g => {
+  const xSplit = (w, scale) => g => {
     g.selectAll("line")
-      .data(scale.ticks(width / 80))
+      .data(scale.ticks(w / 80))
       .join(
         enter => enter.append("line")
           .attr("x1", scale).attr("x2", scale),
-        update => ((redraw) ? update.transition().duration(1000) : update)
+        update => ((v.main.redraw()) ? update.transition().duration(1000) : update)
           .attr("x1", scale).attr("x2", scale)
       )
       .attr("stroke", "white")
       .attr("stroke-width", 1)
-      .attr("y2", height - margin.bottom - margin.top)
+      .attr("y2", v.main.height() - v.main.margin().bottom - v.main.margin().top)
   }
 
   const bar = rect => rect
     .attr("class", "bar")
     .attr("y", d => y(d[0]))
     .attr("height", y.bandwidth())
-    .attr("fill", color);
+    .attr("fill", v.main.color());
 
   const barLabel = text => text
     .attr("class", "label")
@@ -45,54 +113,59 @@ export function barChart() {
     .attr("font-family", "sans-serif")
     .attr("font-weight", 600)
     .attr("font-size", 10)
-    .text(label);
+    .text(v.main.label());
 
   const init = svg => {
     const data = d3.select(svg).datum();
 
-    if (width === undefined)
-      width = svg.parentNode.clientWidth;
+    if (v.main.width() === undefined)
+      v.main.width(svg.parentNode.clientWidth);
 
-    x.set(svg, ((xScale === undefined)
+    x.set(svg, ((v.main.xScale() === undefined)
       ? d3.scaleLinear().domain([0, d3.max(data.values())]).nice()
-      : xScale)
-      .range([margin.left, width - margin.right])
+      : v.main.xScale())
+      .range([v.main.margin().left, v.main.width() - v.main.margin().right])
     );
 
-    y = ((yScale === undefined)
+    y = ((v.main.yScale() === undefined)
       ? d3.scaleBand().domain(data.keys()).padding(0.3)
-      : yScale)
-      .range([height - margin.bottom, margin.top]);
+      : v.main.yScale())
+      .range([v.main.height() - v.main.margin().bottom, v.main.margin().top]);
   }
 
-  function main(selection) {
+  const funcs = Object.entries(v.main);
+  const margin = v.main.margin();
+
+  v.main = function (selection) {
     selection.each(function (data, index) {
       init(this);
 
-      const svg = d3.select(this)
-        .attr("height", height);
+      v.main.margin({ ...margin });
 
-      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
-        .call(yAxis(y))
+      const svg = d3.select(this)
+        .attr("height", v.main.height());
+
+      ((v.main.redraw()) ? svg.select(".y-axis") : svg.append("g"))
+        .call(v.main.yAxis()(y))
         .call(g => {
-          let text = g.selectAll(".tick text");
-          margin.left += wrap(text, wrappx);
+          const text = g.selectAll(".tick text");
+          v.main.margin().left += wrap(text, v.main.wrappx());
         })
         .attr("class", "y-axis")
-        .attr("transform", `translate(${margin.left}, 0)`);
+        .attr("transform", `translate(${v.main.margin().left}, 0)`);
 
       const bars = svg.selectAll(".bar")
         .data(data)
         .join("rect")
         .call(bar);
 
-      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
+      const xAxisGroup = ((v.main.redraw()) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${margin.top})`);
+        .attr("transform", `translate(0, ${v.main.margin().top})`);
 
-      const xSplitGroup = ((redraw) ? svg.select(".x-split") : svg.append("g"))
+      const xSplitGroup = ((v.main.redraw()) ? svg.select(".x-split") : svg.append("g"))
         .attr("class", "x-split")
-        .attr("transform", `translate(0, ${margin.top})`);
+        .attr("transform", `translate(0, ${v.main.margin().top})`);
 
       const labels = svg.selectAll(".label")
         .data(data)
@@ -101,23 +174,24 @@ export function barChart() {
 
       const render = () => {
         const cw = this.parentNode.clientWidth;
-        const w = (resize) ? cw : (cw < width) ? cw : width;
+        // eslint-disable-next-line no-nested-ternary
+        const w = (v.main.resize()) ? cw : (cw < v.main.width()) ? cw : v.main.width();
 
         svg.attr("width", w);
 
         const _x = x.get(this)
-          .range([margin.left, w - margin.right]);
+          .range([v.main.margin().left, w - v.main.margin().right]);
 
-        xAxisGroup.call(xAxis(w, _x, redraw));
+        xAxisGroup.call(v.main.xAxis()(w, _x, v.main.redraw()));
         xSplitGroup.call(xSplit(w, _x));
 
         const min = _x.domain()[0];
 
-        ((redraw) ? bars.transition().duration(1000) : bars)
+        ((v.main.redraw()) ? bars.transition().duration(1000) : bars)
           .attr("x", _x(min))
           .attr("width", d => _x(d[1]) - _x(min));
 
-        ((redraw) ? labels.transition().duration(1000) : labels)
+        ((v.main.redraw()) ? labels.transition().duration(1000) : labels)
           .attr("x", d => _x(d[1]));
       }
 
@@ -126,68 +200,18 @@ export function barChart() {
     });
   }
 
-  main.width = function (w) {
-    return (arguments.length) ? (width = w, main) : width;
-  }
+  funcs.forEach(([prop, func]) => {
+    v.main[prop] = func;
+  });
 
-  main.height = function (h) {
-    return (arguments.length) ? (height = h, main) : height;
-  }
-
-  main.margin = function (m) {
-    return (arguments.length) ? (margin = m, main) : margin;
-  }
-
-  main.xScale = function (_) {
-    return (arguments.length) ? (xScale = _, main) : xScale;
-  }
-
-  main.xAxis = function (f) {
-    return (arguments.length) ? (xAxis = f, main) : xAxis;
-  }
-
-  main.yAxis = function (f) {
-    return (arguments.length) ? (yAxis = f, main) : yAxis;
-  }
-
-  main.yScale = function (_) {
-    return (arguments.length) ? (yScale = _, main) : yScale;
-  }
-
-  main.color = function (c) {
-    return (arguments.length) ? (color = c, main) : color;
-  }
-
-  main.label = function (l) {
-    return (arguments.length) ? (label = l, main) : label;
-  }
-
-  main.resize = function (r) {
-    return (arguments.length) ? (resize = r, main) : resize;
-  }
-
-  main.redraw = function () {
-    redraw = true;
-    return main;
-  }
-
-  main.wrappx = function (px) {
-    return (arguments.length) ? (wrappx = px, main) : wrappx;
-  }
-
-  return main;
+  return v.main;
 }
 
 export function groupedBarChart() {
-  let width, height = 200;
-  let x = d3.local(), y0, y1, xScale, yScale;
-  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
-  let resize = true, redraw = false;
-  let color = () => "steelblue", label = d => d[1];
-  let wrappx = 50;
-
-  let xAxis = xAxisTop;
-  let yAxis = yAxisLeft;
+  const v = new Visual();
+  const x = d3.local();
+  let y0;
+  let y1;
 
   const barLabel = text => text
     .attr("class", "label")
@@ -197,26 +221,27 @@ export function groupedBarChart() {
     .attr("font-family", "sans-serif")
     .attr("font-weight", 600)
     .attr("font-size", 10)
-    .text(label);
+    .text(v.main.label());
 
   const init = svg => {
     const data = d3.select(svg).datum();
     const keys = Object.keys(data.values().next().value);
 
-    if (width === undefined)
-      width = svg.parentNode.clientWidth;
+    if (v.main.width() === undefined)
+      v.main.width(svg.parentNode.clientWidth);
 
-    x.set(svg, ((xScale === undefined)
+    x.set(svg, ((v.main.xScale() === undefined)
       ? d3.scaleLinear().domain(
+        // eslint-disable-next-line no-shadow
         [0, d3.max(data, d => d3.max(Object.entries(d[1]), d => +d[1]))]
       ).nice()
-      : xScale)
-      .range([margin.left, width - margin.right])
+      : v.main.xScale())
+      .range([v.main.margin().left, v.main.width() - v.main.margin().right])
     );
 
     y0 = d3.scaleBand()
       .domain(data.keys())
-      .range([height - margin.bottom, margin.top])
+      .range([v.main.height() - v.main.margin().bottom, v.main.margin().top])
       .padding(0.3);
 
     y1 = d3.scaleBand()
@@ -224,23 +249,28 @@ export function groupedBarChart() {
       .range([0, y0.bandwidth()]);
   }
 
-  function main(selection) {
+  const funcs = Object.entries(v.main);
+  const margin = v.main.margin();
+
+  v.main = function (selection) {
     selection.each(function (data, index) {
       init(this);
 
-      const svg = d3.select(this)
-        .attr("height", height);
+      v.main.margin({ ...margin });
 
-      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
-        .call(yAxis(y0))
+      const svg = d3.select(this)
+        .attr("height", v.main.height());
+
+      ((v.main.redraw()) ? svg.select(".y-axis") : svg.append("g"))
+        .call(v.main.yAxis()(y0))
         .call(g => {
-          let text = g.selectAll(".tick text");
-          margin.left += wrap(text, wrappx);
+          const text = g.selectAll(".tick text");
+          margin.left += wrap(text, v.main.wrappx());
         })
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`);
 
-      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
+      const xAxisGroup = ((v.main.redraw()) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${margin.top})`);
 
@@ -256,7 +286,7 @@ export function groupedBarChart() {
         .join("rect")
         .attr("y", d => y1(d[0]))
         .attr("height", y1.bandwidth())
-        .attr("fill", color);
+        .attr("fill", v.main.color());
 
       const labels = groups
         .selectAll("text")
@@ -267,20 +297,21 @@ export function groupedBarChart() {
 
       const render = () => {
         const cw = this.parentNode.clientWidth;
-        const w = (resize) ? cw : (cw < width) ? cw : width;
+        // eslint-disable-next-line no-nested-ternary
+        const w = (v.main.resize()) ? cw : (cw < v.main.width()) ? cw : v.main.width();
 
         svg.attr("width", w);
         const _x = x.get(this)
           .range([margin.left, w - margin.right]);
 
-        xAxisGroup.call(xAxis(w, _x, redraw));
+        xAxisGroup.call(v.main.xAxis()(w, _x, v.main.redraw()));
         const min = _x.domain()[0];
 
-        ((redraw) ? bars.transition().duration(1000) : bars)
+        ((v.main.redraw()) ? bars.transition().duration(1000) : bars)
           .attr("x", _x(min))
           .attr("width", d => _x(d[1]) - _x(min));
 
-        ((redraw) ? labels.transition().duration(1000) : labels)
+        ((v.main.redraw()) ? labels.transition().duration(1000) : labels)
           .attr("x", d => _x(d[1]));
       };
 
@@ -289,58 +320,9 @@ export function groupedBarChart() {
     });
   }
 
-  main.width = function (w) {
-    return (arguments.length) ? (width = w, main) : width;
-  }
+  funcs.forEach(([prop, func]) => {
+    v.main[prop] = func;
+  });
 
-  main.height = function (h) {
-    return (arguments.length) ? (height = h, main) : height;
-  }
-
-  main.margin = function (m) {
-    return (arguments.length) ? (margin = m, main) : margin;
-  }
-
-  main.xScale = function (_) {
-    return (arguments.length) ? (xScale = _, main) : xScale;
-  }
-
-  main.xAxis = function (f) {
-    return (arguments.length) ? (xAxis = f, main) : xAxis;
-  }
-
-  main.yAxis = function (f) {
-    return (arguments.length) ? (yAxis = f, main) : yAxis;
-  }
-
-  main.color = function (c) {
-    return (arguments.length) ? (color = c, main) : color;
-  }
-
-  main.label = function (l) {
-    return (arguments.length) ? (label = l, main) : label;
-  }
-
-  main.resize = function (r) {
-    return (arguments.length) ? (resize = r, main) : resize;
-  }
-
-  main.redraw = function () {
-    redraw = true;
-    return main;
-  }
-
-  main.wrappx = function (px) {
-    return (arguments.length) ? (wrappx = px, main) : wrappx;
-  }
-
-  return main;
+  return v.main;
 }
-
-// export function stackedBarChart() {
-//   function main() {
-
-//   }
-
-//   return main;
-// }

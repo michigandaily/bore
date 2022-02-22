@@ -4,8 +4,9 @@ const length = el => el.node().getComputedTextLength();
 
 // This function is adapted from a Mike Bostock implementation of text wrapping
 // https://bl.ocks.org/mbostock/7555321
+// eslint-disable-next-line import/prefer-default-export
 export const wrap = (selection, w) => {
-  let maxTextL = 0, maxSpanL = 0, l;
+  let maxTextL = 0; let maxSpanL = 0; let l;
 
   const lencomp = (text, context) => {
     if ((l = length(text)) > context) {
@@ -15,16 +16,17 @@ export const wrap = (selection, w) => {
   }
 
   selection.each(function () {
-    let text = d3.select(this);
+    const text = d3.select(this);
 
     // get the maximum possible length of a label
     maxTextL = lencomp(text, maxTextL);
 
-    let words = text.text().split(/\s+/).reverse();
+    const words = text.text().split(/\s+/).reverse();
     if (words.length === 1) return;
     let word;
     let line = Array();
-    let x = text.attr("x"), y = text.attr("y");
+    const x = text.attr("x");
+    const y = text.attr("y");
     let tspan = text
       .text(null)
       .append("tspan")
@@ -55,4 +57,4 @@ export const wrap = (selection, w) => {
   });
 
   return (maxSpanL && maxSpanL < maxTextL) ? maxSpanL : maxTextL;
-}
+};
