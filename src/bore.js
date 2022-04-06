@@ -1,346 +1,182 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-return-assign */
+
 import * as d3 from "d3";
-import { wrap } from "./util.js";
-import { xAxisTop, yAxisLeft } from "./axis.js";
+import { wrap } from "./util";
+import { xAxisTop, yAxisLeft } from "./axis";
 
-export * from "./color.js";
-export * from "./util.js";
+export * from "./color";
+export * from "./util";
+export class BarChart {
+  constructor() {
+    this._height = 150;
+    this._width = null;
+    this._margin = { top: 20, right: 40, bottom: 20, left: 40 };
+    this._xScale = null;
+    this._yScale = null;
+    this._color = () => "steelblue";
+    this._label = (d) => d[1];
+    this._resize = true;
+    this._redraw = false;
+    this._wrappx = 50;
 
-export function barChart() {
-  let width, height = 150;
-  let x = d3.local(), y, xScale, yScale;
-  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
-  let color = () => "steelblue", label = d => d[1];
-  let resize = true;
-  let redraw = false;
-  let wrappx = 50;
+    this.x = d3.local();
+    this.y = null;
 
-  let xAxis = xAxisTop;
-  let yAxis = yAxisLeft;
-
-  const xSplit = (width, scale) => g => {
-    g.selectAll("line")
-      .data(scale.ticks(width / 80))
-      .join(
-        enter => enter.append("line")
-          .attr("x1", scale).attr("x2", scale),
-        update => ((redraw) ? update.transition().duration(1000) : update)
-          .attr("x1", scale).attr("x2", scale)
-      )
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .attr("y2", height - margin.bottom - margin.top)
+    this.xAxis = xAxisTop;
+    this.yAxis = yAxisLeft;
   }
 
-  const bar = rect => rect
-    .attr("class", "bar")
-    .attr("y", d => y(d[0]))
-    .attr("height", y.bandwidth())
-    .attr("fill", color);
+  draw(selection) {
+    const xSplit = (width, scale) => g => {
+      g.selectAll("line")
+        .data(scale.ticks(width / 80))
+        .join(
+          enter => enter.append("line")
+            .attr("x1", scale).attr("x2", scale),
+          update => ((this._redraw) ? update.transition().duration(1000) : update)
+            .attr("x1", scale).attr("x2", scale)
+        )
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .attr("y2", this._height - this._margin.bottom - this._margin.top)
+    }
 
-  const barLabel = text => text
-    .attr("class", "label")
-    .attr("dx", "0.25em")
-    .attr("y", d => y(d[0]) + y.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .attr("font-family", "sans-serif")
-    .attr("font-weight", 600)
-    .attr("font-size", 10)
-    .text(label);
+    const bar = rect => rect
+      .attr("class", "bar")
+      .attr("y", d => this.y(d[0]))
+      .attr("height", this.y.bandwidth())
+      .attr("fill", this._color);
 
-  const init = svg => {
-    const data = d3.select(svg).datum();
+    const barLabel = text => text
+      .attr("class", "label")
+      .attr("dx", "0.25em")
+      .attr("y", d => this.y(d[0]) + this.y.bandwidth() / 2)
+      .attr("alignment-baseline", "central")
+      .attr("font-family", "sans-serif")
+      .attr("font-weight", 600)
+      .attr("font-size", 10)
+      .text(this._label);
 
-    if (width === undefined)
-      width = svg.parentNode.clientWidth;
+    const m = { ...this.margin() };
 
-    x.set(svg, ((xScale === undefined)
-      ? d3.scaleLinear().domain([0, d3.max(data.values())]).nice()
-      : xScale)
-      .range([margin.left, width - margin.right])
-    );
+    selection.each((d, i, s) => {
+      this.margin({ ...m });
 
-    y = ((yScale === undefined)
-      ? d3.scaleBand().domain(data.keys()).padding(0.3)
-      : yScale)
-      .range([height - margin.bottom, margin.top]);
-  }
+      let svg = s[i];
 
-  function main(selection) {
-    selection.each(function (data, index) {
-      init(this);
+      if (this.width() === null) {
+        this.width(svg.parentNode.clientWidth);
+      }
 
-      const svg = d3.select(this)
-        .attr("height", height);
+      this.x.set(svg, ((this._xScale === null)
+        ? d3.scaleLinear().domain([0, d3.max(d.values())]).nice()
+        : this._xScale)
+        .range([this._margin.left, this._width - this._margin.right])
+      );
 
-      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
-        .call(yAxis(y))
+      this.y = ((this._yScale === null)
+        ? d3.scaleBand().domain(d.keys()).padding(0.3)
+        : this._yScale)
+        .range([this._height - this._margin.bottom, this._margin.top]);
+
+      svg = d3.select(svg)
+        .attr("height", this._height);
+
+      ((this._redraw) ? svg.select(".y-axis") : svg.append("g"))
+        .call(this.yAxis(this.y))
         .call(g => {
-          let text = g.selectAll(".tick text");
-          margin.left += wrap(text, wrappx);
+          const text = g.selectAll(".tick text");
+          this._margin.left += wrap(text, this._wrappx);
         })
         .attr("class", "y-axis")
-        .attr("transform", `translate(${margin.left}, 0)`);
+        .attr("transform", `translate(${this._margin.left}, 0)`);
 
       const bars = svg.selectAll(".bar")
-        .data(data)
+        .data(d)
         .join("rect")
         .call(bar);
 
-      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
+      const xAxisGroup = ((this._redraw) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${margin.top})`);
+        .attr("transform", `translate(0, ${this._margin.top})`);
 
-      const xSplitGroup = ((redraw) ? svg.select(".x-split") : svg.append("g"))
+      const xSplitGroup = ((this._redraw) ? svg.select(".x-split") : svg.append("g"))
         .attr("class", "x-split")
-        .attr("transform", `translate(0, ${margin.top})`);
+        .attr("transform", `translate(0, ${this._margin.top})`);
 
       const labels = svg.selectAll(".label")
-        .data(data)
+        .data(d)
         .join("text")
         .call(barLabel);
 
       const render = () => {
-        const cw = this.parentNode.clientWidth;
-        const w = (resize) ? cw : (cw < width) ? cw : width;
+        const cw = svg.node().parentNode.clientWidth;
+        // eslint-disable-next-line no-nested-ternary
+        const w = (this._resize) ? cw : (cw < this._width) ? cw : this._width;
 
         svg.attr("width", w);
 
-        const _x = x.get(this)
-          .range([margin.left, w - margin.right]);
+        const _x = this.x.get(svg.node())
+          .range([this._margin.left, w - this._margin.right]);
 
-        xAxisGroup.call(xAxis(w, _x, redraw));
+        xAxisGroup.call(this.xAxis(w, _x, this._redraw));
         xSplitGroup.call(xSplit(w, _x));
 
         const min = _x.domain()[0];
 
-        ((redraw) ? bars.transition().duration(1000) : bars)
+        ((this._redraw) ? bars.transition().duration(1000) : bars)
           .attr("x", _x(min))
-          .attr("width", d => _x(d[1]) - _x(min));
+          .attr("width", datum => _x(datum[1]) - _x(min));
 
-        ((redraw) ? labels.transition().duration(1000) : labels)
-          .attr("x", d => _x(d[1]));
+        ((this._redraw) ? labels.transition().duration(1000) : labels)
+          .attr("x", datum => _x(datum[1]));
       }
 
       render();
-      d3.select(window).on(`resize.${index}`, render);
+      d3.select(window).on(`resize.${i}`, render);
     });
+    return this
   }
 
-  main.width = function (w) {
-    return (arguments.length) ? (width = w, main) : width;
+  width(w) {
+    return (arguments.length) ? (this._width = w, this) : this._width;
   }
 
-  main.height = function (h) {
-    return (arguments.length) ? (height = h, main) : height;
+  height(h) {
+    return (arguments.length) ? (this._height = h, this) : this._height;
   }
 
-  main.margin = function (m) {
-    return (arguments.length) ? (margin = m, main) : margin;
+  margin(m) {
+    return (arguments.length) ? (this._margin = m, this) : this._margin;
   }
 
-  main.xScale = function (_) {
-    return (arguments.length) ? (xScale = _, main) : xScale;
+  xScale(s) {
+    return (arguments.length) ? (this._xScale = s, this) : this._xScale;
   }
 
-  main.xAxis = function (f) {
-    return (arguments.length) ? (xAxis = f, main) : xAxis;
+  yScale(s) {
+    return (arguments.length) ? (this._yScale = s, this) : this._yScale;
   }
 
-  main.yAxis = function (f) {
-    return (arguments.length) ? (yAxis = f, main) : yAxis;
+  color(c) {
+    return (arguments.length) ? (this._color = c, this) : this._color;
   }
 
-  main.yScale = function (_) {
-    return (arguments.length) ? (yScale = _, main) : yScale;
+  label(l) {
+    return (arguments.length) ? (this._label = l, this) : this._label;
   }
 
-  main.color = function (c) {
-    return (arguments.length) ? (color = c, main) : color;
+  resize(r) {
+    return (arguments.length) ? (this._resize = r, this) : this._resize;
   }
 
-  main.label = function (l) {
-    return (arguments.length) ? (label = l, main) : label;
+  redraw() {
+    this._redraw = true;
+    return this;
   }
 
-  main.resize = function (r) {
-    return (arguments.length) ? (resize = r, main) : resize;
+  wrappx(px) {
+    return (arguments.length) ? (this._wrappx = px, this) : this._wrappx;
   }
-
-  main.redraw = function () {
-    redraw = true;
-    return main;
-  }
-
-  main.wrappx = function (px) {
-    return (arguments.length) ? (wrappx = px, main) : wrappx;
-  }
-
-  return main;
 }
-
-export function groupedBarChart() {
-  let width, height = 200;
-  let x = d3.local(), y0, y1, xScale, yScale;
-  let margin = { top: 20, right: 40, bottom: 20, left: 40 };
-  let resize = true, redraw = false;
-  let color = () => "steelblue", label = d => d[1];
-  let wrappx = 50;
-
-  let xAxis = xAxisTop;
-  let yAxis = yAxisLeft;
-
-  const barLabel = text => text
-    .attr("class", "label")
-    .attr("dx", "0.25em")
-    .attr("y", d => y1(d[0]) + y1.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .attr("font-family", "sans-serif")
-    .attr("font-weight", 600)
-    .attr("font-size", 10)
-    .text(label);
-
-  const init = svg => {
-    const data = d3.select(svg).datum();
-    const keys = Object.keys(data.values().next().value);
-
-    if (width === undefined)
-      width = svg.parentNode.clientWidth;
-
-    x.set(svg, ((xScale === undefined)
-      ? d3.scaleLinear().domain(
-        [0, d3.max(data, d => d3.max(Object.entries(d[1]), d => +d[1]))]
-      ).nice()
-      : xScale)
-      .range([margin.left, width - margin.right])
-    );
-
-    y0 = d3.scaleBand()
-      .domain(data.keys())
-      .range([height - margin.bottom, margin.top])
-      .padding(0.3);
-
-    y1 = d3.scaleBand()
-      .domain(keys)
-      .range([0, y0.bandwidth()]);
-  }
-
-  function main(selection) {
-    selection.each(function (data, index) {
-      init(this);
-
-      const svg = d3.select(this)
-        .attr("height", height);
-
-      ((redraw) ? svg.select(".y-axis") : svg.append("g"))
-        .call(yAxis(y0))
-        .call(g => {
-          let text = g.selectAll(".tick text");
-          margin.left += wrap(text, wrappx);
-        })
-        .attr("class", "y-axis")
-        .attr("transform", `translate(${margin.left}, 0)`);
-
-      const xAxisGroup = ((redraw) ? svg.select(".x-axis") : svg.append("g"))
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${margin.top})`);
-
-      const groups = svg.selectAll(".bargroup")
-        .data(data)
-        .join("g")
-        .attr("class", "bargroup")
-        .attr("transform", d => `translate(0, ${y0(d[0])})`)
-
-      const bars = groups
-        .selectAll("rect")
-        .data(d => Object.entries(d[1]))
-        .join("rect")
-        .attr("y", d => y1(d[0]))
-        .attr("height", y1.bandwidth())
-        .attr("fill", color);
-
-      const labels = groups
-        .selectAll("text")
-        .data(d => Object.entries(d[1]))
-        .join("text")
-        .attr("y", d => y1(d[0]))
-        .call(barLabel)
-
-      const render = () => {
-        const cw = this.parentNode.clientWidth;
-        const w = (resize) ? cw : (cw < width) ? cw : width;
-
-        svg.attr("width", w);
-        const _x = x.get(this)
-          .range([margin.left, w - margin.right]);
-
-        xAxisGroup.call(xAxis(w, _x, redraw));
-        const min = _x.domain()[0];
-
-        ((redraw) ? bars.transition().duration(1000) : bars)
-          .attr("x", _x(min))
-          .attr("width", d => _x(d[1]) - _x(min));
-
-        ((redraw) ? labels.transition().duration(1000) : labels)
-          .attr("x", d => _x(d[1]));
-      };
-
-      render();
-      d3.select(window).on(`resize.${index}`, render);
-    });
-  }
-
-  main.width = function (w) {
-    return (arguments.length) ? (width = w, main) : width;
-  }
-
-  main.height = function (h) {
-    return (arguments.length) ? (height = h, main) : height;
-  }
-
-  main.margin = function (m) {
-    return (arguments.length) ? (margin = m, main) : margin;
-  }
-
-  main.xScale = function (_) {
-    return (arguments.length) ? (xScale = _, main) : xScale;
-  }
-
-  main.xAxis = function (f) {
-    return (arguments.length) ? (xAxis = f, main) : xAxis;
-  }
-
-  main.yAxis = function (f) {
-    return (arguments.length) ? (yAxis = f, main) : yAxis;
-  }
-
-  main.color = function (c) {
-    return (arguments.length) ? (color = c, main) : color;
-  }
-
-  main.label = function (l) {
-    return (arguments.length) ? (label = l, main) : label;
-  }
-
-  main.resize = function (r) {
-    return (arguments.length) ? (resize = r, main) : resize;
-  }
-
-  main.redraw = function () {
-    redraw = true;
-    return main;
-  }
-
-  main.wrappx = function (px) {
-    return (arguments.length) ? (wrappx = px, main) : wrappx;
-  }
-
-  return main;
-}
-
-// export function stackedBarChart() {
-//   function main() {
-
-//   }
-
-//   return main;
-// }
