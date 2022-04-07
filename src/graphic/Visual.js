@@ -1,45 +1,55 @@
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable lines-between-class-members */
 /* eslint-disable no-return-assign */
 
 export default class Visual {
+  #width;
+  #height;
+  #margin;
+  #xScale;
+  #yScale;
+  #color;
+  #label;
+  #resize;
+  #redraw;
+  #wrappx;
+
   width(w) {
-    return (arguments.length) ? (this._width = w, this) : this._width;
+    return (arguments.length) ? (this.#width = w, this) : this.#width;
   }
 
   height(h) {
-    return (arguments.length) ? (this._height = h, this) : this._height;
+    return (arguments.length) ? (this.#height = h, this) : this.#height;
   }
 
   margin(m) {
-    return (arguments.length) ? (this._margin = m, this) : this._margin;
+    return (arguments.length) ? (this.#margin = m, this) : this.#margin;
   }
 
   xScale(s) {
-    return (arguments.length) ? (this._xScale = s, this) : this._xScale;
+    return (arguments.length) ? (this.#xScale = s, this) : this.#xScale;
   }
 
   yScale(s) {
-    return (arguments.length) ? (this._yScale = s, this) : this._yScale;
+    return (arguments.length) ? (this.#yScale = s, this) : this.#yScale;
   }
 
   color(c) {
-    return (arguments.length) ? (this._color = c, this) : this._color;
+    return (arguments.length) ? (this.#color = c, this) : this.#color;
   }
 
   label(l) {
-    return (arguments.length) ? (this._label = l, this) : this._label;
+    return (arguments.length) ? (this.#label = l, this) : this.#label;
   }
 
   resize(r) {
-    return (arguments.length) ? (this._resize = r, this) : this._resize;
+    return (arguments.length) ? (this.#resize = r, this) : this.#resize;
   }
 
-  redraw() {
-    this._redraw = true;
-    return this;
+  redraw(r) {
+    return (arguments.length) ? (this.#redraw = r, this) : this.#redraw;
   }
 
   wrappx(px) {
-    return (arguments.length) ? (this._wrappx = px, this) : this._wrappx;
+    return (arguments.length) ? (this.#wrappx = px, this) : this.#wrappx;
   }
 };
