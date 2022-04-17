@@ -13,12 +13,11 @@ export default class BarChart extends Visual {
     this.resize(true);
     this.redraw(false);
     this.wrappx(50);
+    this.xAxis(xAxisTop);
+    this.yAxis(yAxisLeft);
 
     this.x = local();
     this.y = null;
-
-    this.xAxis = xAxisTop;
-    this.yAxis = yAxisLeft;
   }
 
   xSplit(width, scale) {
@@ -83,7 +82,7 @@ export default class BarChart extends Visual {
         .attr("height", this.height());
 
       ((this.redraw()) ? svg.select(".y-axis") : svg.append("g"))
-        .call(this.yAxis(this.y))
+        .call(this.yAxis()(this.y))
         .call(g => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
@@ -119,7 +118,7 @@ export default class BarChart extends Visual {
         const lx = this.x.get(svg.node())
           .range([left, w - right]);
 
-        xAxisGroup.call(this.xAxis(w, lx, this.redraw()));
+        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
         xSplitGroup.call(this.xSplit(w, lx));
 
         const min = lx.domain()[0];

@@ -6,7 +6,9 @@ export default class Visual {
   #height;
   #margin;
   #xScale;
+  #xAxis;
   #yScale;
+  #yAxis;
   #color;
   #label;
   #resize;
@@ -29,8 +31,16 @@ export default class Visual {
     return (arguments.length) ? (this.#xScale = s, this) : this.#xScale;
   }
 
+  xAxis(a) {
+    return (arguments.length) ? (this.#xAxis = a, this) : this.#xAxis;
+  }
+
   yScale(s) {
     return (arguments.length) ? (this.#yScale = s, this) : this.#yScale;
+  }
+
+  yAxis(a) {
+    return (arguments.length) ? (this.#yAxis = a, this) : this.#yAxis;
   }
 
   color(c) {
