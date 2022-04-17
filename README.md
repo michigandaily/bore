@@ -2,7 +2,7 @@
 
 > beautiful or else.
 
-`bore` is a library built on top of [D3](https://github.com/d3/d3) that lets you create extendible, reusable, and stylistically consistent visualizations. It follows from the article ["Towards Reusable Charts"](https://bost.ocks.org/mike/chart/) written by [Mike Bostock](https://github.com/d3/d3).
+`bore` is a library built on top of [D3](https://github.com/d3/d3) that lets you create extendible, reusable and stylistically consistent visualizations. It follows from the article ["Towards Reusable Charts"](https://bost.ocks.org/mike/chart/) written by [Mike Bostock](https://github.com/mbostock).
 
 We use it for our data graphics at [The Michigan Daily](https://michigandaily.com).
 
@@ -48,9 +48,9 @@ In addition to providing chart types, `bore` also exports several useful utility
 - Bind your data to an SVG:
 
   ```javascript
-  d3.select("figure")
+  const svg = d3.select("figure")
     .append("svg")
-    .datum(data)
+    .datum(data);
   ```
 
   Currently, [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) are the most supported data type. We plan on better supporting other types of data in the future.
@@ -58,25 +58,22 @@ In addition to providing chart types, `bore` also exports several useful utility
 - Call a `bore` chart on your SVG selection:
 
   ```javascript
-  d3.select("figure")
-    .append("svg")
-    .datum(data)
-    .call(
-      bore.build(
-        new bore.BarChart()
-          .color(color)
-          .height(175)
-          .label(d => `${d[1].toPrecision(3)}%`)
-          .wrappx(75);
-      )
+  svg.call(
+    bore.build(
+      new bore.BarChart()
+        .color(color)
+        .height(175)
+        .label(d => `${d[1].toPrecision(3)}%`)
+        .wrappx(75);
     )
+  );
   ```
 
   Make note of the `new` keyword. Internally, `bore` implements each chart type as a class. The `new` keyword is necessary to create a new instance of a class (as is usual in OOP).
   
   Also make note of the `build` function that wraps the entire `BarChart` construction. Internally, this is necessary to correctly bind the `this` context of the chart to itself instead of to the D3 selection.
 
-  Using other chart types will follow a nearly identical pattern, though the functions that can be chained to a chart type may differ from chart to chart. Refer to the [API Reference](#api-reference) for more details.
+  Using other chart types will follow a nearly identical pattern, though the functions that can be chained to a chart type may differ from chart to chart. Refer to the [API Reference](#api-reference) for more details or take a look at the [examples](./examples/).
 
 <!-- Make a note of redrawing, small multiples, resizing -->
 
@@ -86,13 +83,15 @@ TODO
 
 ## Developing `bore`
 
-Run `yarn build` to create a minified version of `bore` in the `dist` directory.
+Work on a branch if you plan on adding something to `bore` -- the `main` branch is protected.
 
 ### Install `bore` and `cookie`
 
-1. In the same parent directory, clone `bore` and `cookie`.
-2. In `cookie`, run `make`.
-3. In `bore`, run `yarn`.
+1. Clone `cookie`.
+2. Inside `cookie`, clone `bore`.
+   - This is necessary for Parcel 2 hot reloading. Be careful of the nested repositories here. If it helps, you may want to run `rm -rf .git` in `cookie`.
+3. In `cookie`, run `make`.
+4. In `bore`, run `yarn`.
 
 ### Link `bore` and `cookie`
 
@@ -117,3 +116,10 @@ When finished developing, unlink the repositories.
 
 1. In `cookie`, run `yarn unlink "bore"`.
 2. In `bore`, run `yarn unlink`.
+
+### Git and releases
+
+- Run `yarn build` to create a minified version of `bore` in the `dist` directory.
+- Update the version in `package.json` according to [semantic versioning](https://semver.org/).
+- Create a pull request to `main`.
+- Once merged, create a new tag and release with the same version number in `package.json` prefxied with `v`.
