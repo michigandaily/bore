@@ -52,10 +52,9 @@ export default class BarChart extends Visual {
       .attr("font-size", 10)
       .text(this.label());
 
-    const m = { ...this.margin() };
-
     selection.each((d, i, s) => {
-      this.margin({ ...m });
+      const { top, right, bottom } = this.margin();
+      let { left } = this.margin();
 
       let svg = s[i];
 
@@ -66,13 +65,13 @@ export default class BarChart extends Visual {
       this.x.set(svg, ((!this.xScale())
         ? scaleLinear().domain([0, max(d.values())]).nice()
         : this.xScale())
-        .range([this.margin().left, this.width() - this.margin().right])
+        .range([left, this.width() - right])
       );
 
       this.y = ((!this.yScale())
         ? scaleBand().domain(d.keys()).padding(0.3)
         : this.yScale())
-        .range([this.height() - this.margin().bottom, this.margin().top]);
+        .range([this.height() - bottom, top]);
 
       svg = select(svg)
         .attr("height", this.height());
@@ -81,10 +80,10 @@ export default class BarChart extends Visual {
         .call(this.yAxis(this.y))
         .call(g => {
           const text = g.selectAll(".tick text");
-          this.margin().left += wrap(text, this.wrappx());
+          left += wrap(text, this.wrappx());
         })
         .attr("class", "y-axis")
-        .attr("transform", `translate(${this.margin().left}, 0)`);
+        .attr("transform", `translate(${left}, 0)`);
 
       const bars = svg.selectAll(".bar")
         .data(d)
@@ -93,11 +92,11 @@ export default class BarChart extends Visual {
 
       const xAxisGroup = ((this.redraw()) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${this.margin().top})`);
+        .attr("transform", `translate(0, ${top})`);
 
       const xSplitGroup = ((this.redraw()) ? svg.select(".x-split") : svg.append("g"))
         .attr("class", "x-split")
-        .attr("transform", `translate(0, ${this.margin().top})`);
+        .attr("transform", `translate(0, ${top})`);
 
       const labels = svg.selectAll(".label")
         .data(d)
@@ -112,7 +111,7 @@ export default class BarChart extends Visual {
         svg.attr("width", w);
 
         const lx = this.x.get(svg.node())
-          .range([this.margin().left, w - this.margin().right]);
+          .range([left, w - right]);
 
         xAxisGroup.call(this.xAxis(w, lx, this.redraw()));
         xSplitGroup.call(xSplit(w, lx));

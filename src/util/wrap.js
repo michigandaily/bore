@@ -40,7 +40,7 @@ const wrap = (selection, w) => {
 
       l = length(tspan);
       if (l > w) {
-        text.attr("y", text.attr("y") - 5);
+        tspan.attr("y", text.attr("y") - 5);
         line.pop();
         tspan.text(line.join(" "));
 
