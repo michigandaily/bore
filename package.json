@@ -1,6 +1,6 @@
 {
   "name": "bore",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The Michigan Daily D3 graphing library",
   "type": "module",
   "main": "src/bore.js",
