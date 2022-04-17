@@ -6,6 +6,7 @@
   "main": "src/bore.js",
   "module": "src/bore.js",
   "scripts": {
+    "prepare": "husky install",
     "build": "rollup -c"
   },
   "repository": {
@@ -26,6 +27,11 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.2.1",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^7.0.4",
     "rollup": "^2.70.2",
     "rollup-plugin-terser": "^7.0.2"
   }
