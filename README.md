@@ -2,82 +2,56 @@
 
 > beautiful or else.
 
-**bore** lets you write extendible, reusable, and stylistically consistent
-visualizations. We're using it for our interactive graphics at the [Michigan
-Daily](https://michigandaily.com).
+`bore` is a library built on top of [D3](https://github.com/d3/d3) that lets you create extendible, reusable, and stylistically consistent visualizations. It follows from the article ["Towards Reusable Charts"](https://bost.ocks.org/mike/chart/) written by [Mike Bostock](https://github.com/d3/d3).
 
-<p align="center">
-  <img width="300" src="https://imgur.com/HyMdqda.png">
-</p>
+We use it for our data graphics at [The Michigan Daily](https://michigandaily.com).
 
-## Installation
+## Installing `bore`
 
-Minified CSS and JS files are in `dist/`.
+1. Add `bore` as a dependency:
 
-Depends on:
+   ```bash
+   yarn add "https://github.com/MichiganDaily/bore.git#dev"
+   ```
 
-- [d3v5](https://d3js.org/)
-- [d3-array](https://github.com/d3/d3-array) to use the most up-to-date array
-  functions
-- [d3-annotations](https://d3-annotation.susielu.com/) for annotations
+2. Import `bore`:
 
-## Usage
+   ```javascript
+   import * as bore from "bore";
+   ```
 
-### Example
+## API Reference
 
-In your HTML, have a parent figure element with class `vis` and another
-identifying class name.
-```html
-<figure class="vis cases_closings"></figure>
-```
-In your JavaScript, declare a new visualization by inheriting one of our base
-visualization classes (documentation coming soon™). Create an instance of the
-visualization and call its `draw()` function to render.
-```js
-class CasesClosings extends bore.MultiLinePlot {
-  constructor(el, width, height, margins, data) {
-    super(el, width, height, margins, data);
-    this.title = "A Late Start and a Rush to Catch Up";
-    this.subtitle = "Cumulative case and school count on a log scale (slope is rate of exponential increase)."
-    this.author = "Naitian Zhou";
+TODO
 
-    this.yscale = d3.scaleLog().range([this.height, 0]).nice();
-    this.yaxis.ticks(6);
+## Developing `bore`
 
-    this.xaxis.tickFormat(d3.timeFormat("%m-%d"));
-    this.draw();
-  }
+### Install `bore` and `cookie`
 
-  hoverFormat(d) {
-    // this is a shorthand because index is 0 or 1
-    return !d.ind ? `${d.y} schools` : `${d.y} cases`;
-  }
+1. In the same parent directory, clone `bore` and `cookie`.
+2. In `cookie`, run `make`.
+3. In `bore`, run `yarn`.
 
-  draw() {
-    super.draw();
-  }
-}
-const closings_counts = closings_ct.getData();
-const case_counts = Array.from(
-d3.rollup(
-  nytcases_data,
-  (g) => d3.sum(g.map((s) => s.cases)),
-  (d) => formatTime(d.date)
-).entries(),
-d => ({x: parseTime(d[0]), y: d[1]})
-).sort((a, b) => d3.ascending(a.x, b.x));
-const cases_closings = new CasesClosings(
-  ".vis.cases_closings",
-  400,
-  300,
-  { top: 60, bottom: 50, left: 50, right: 60 },
-  [closings_counts, case_counts]
-)
-```
+### Link `bore` and `cookie`
 
-## Contributing
+1. In `bore`, run `yarn link`.
+2. In `cookie`, run `yarn link "bore"`.
+3. Import `bore` in `cookie`:
 
-Clone the repository, and install the node modules with `yarn`.
+   ```javascript
+   // cookie/src/graphic/js/graphic.js
+   import * as bore from "bore";
+   ```
 
-To build for production (compiles and minifies SCSS and Javascript), just run
-`gulp`.
+### Serve `cookie`
+
+In `cookie`, run `make dev`.
+
+Whenever changes are made in `bore`, the `cookie` server will reload to reflect those changes.
+
+### Unlink `bore` and `cookie`
+
+When finished developing, unlink the repositories.
+
+1. In `cookie`, run `yarn unlink "bore"`.
+2. In `bore`, run `yarn unlink`.
