@@ -26,6 +26,8 @@ TODO
 
 ## Developing `bore`
 
+Run `yarn build` to build a minified version of `bore` to `dist`,
+
 ### Install `bore` and `cookie`
 
 1. In the same parent directory, clone `bore` and `cookie`.
