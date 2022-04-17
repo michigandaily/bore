@@ -21,8 +21,8 @@ export default class BarChart extends Visual {
     this.yAxis = yAxisLeft;
   }
 
-  draw(selection) {
-    const xSplit = (width, scale) => g => {
+  xSplit(width, scale) {
+    return (g) => {
       g.selectAll("line")
         .data(scale.ticks(width / 80))
         .join(
@@ -35,14 +35,18 @@ export default class BarChart extends Visual {
         .attr("stroke-width", 1)
         .attr("y2", this.height() - this.margin().bottom - this.margin().top)
     }
+  }
 
-    const bar = rect => rect
+  bar(rect) {
+    return rect
       .attr("class", "bar")
       .attr("y", d => this.y(d[0]))
       .attr("height", this.y.bandwidth())
       .attr("fill", this.color());
+  }
 
-    const barLabel = text => text
+  barLabel(text) {
+    return text
       .attr("class", "label")
       .attr("dx", "0.25em")
       .attr("y", d => this.y(d[0]) + this.y.bandwidth() / 2)
@@ -51,7 +55,9 @@ export default class BarChart extends Visual {
       .attr("font-weight", 600)
       .attr("font-size", 10)
       .text(this.label());
+  }
 
+  draw(selection) {
     selection.each((d, i, s) => {
       const { top, right, bottom } = this.margin();
       let { left } = this.margin();
@@ -88,7 +94,7 @@ export default class BarChart extends Visual {
       const bars = svg.selectAll(".bar")
         .data(d)
         .join("rect")
-        .call(bar);
+        .call(this.bar.bind(this));
 
       const xAxisGroup = ((this.redraw()) ? svg.select(".x-axis") : svg.append("g"))
         .attr("class", "x-axis")
@@ -101,7 +107,7 @@ export default class BarChart extends Visual {
       const labels = svg.selectAll(".label")
         .data(d)
         .join("text")
-        .call(barLabel);
+        .call(this.barLabel.bind(this));
 
       const render = () => {
         const cw = svg.node().parentNode.clientWidth;
@@ -114,7 +120,7 @@ export default class BarChart extends Visual {
           .range([left, w - right]);
 
         xAxisGroup.call(this.xAxis(w, lx, this.redraw()));
-        xSplitGroup.call(xSplit(w, lx));
+        xSplitGroup.call(this.xSplit(w, lx));
 
         const min = lx.domain()[0];
 
