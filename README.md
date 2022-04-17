@@ -6,27 +6,87 @@
 
 We use it for our data graphics at [The Michigan Daily](https://michigandaily.com).
 
-## Installing `bore`
+If you're familiar with D3, using `bore` should be fairly intuitive because it follows from the function pattern in D3 (and jQuery).
 
-1. Add `bore` as a dependency:
+  ```javascript
+  const svg = d3.select("figure")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-   ```bash
-   yarn add "https://github.com/MichiganDaily/bore.git#dev"
-   ```
+  const x = d3.scaleLinear()
+    .domain([0, 100])
+    .range([margin.left, width - margin.right])
 
-2. Import `bore`:
+  const xAxis = svg.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .call(d3.axisLeft(x).ticks(width / 80));
+  ```
 
-   ```javascript
-   import * as bore from "bore";
-   ```
+Here we append a `g` element to the `svg` and call the `axisLeft` function with the `x` scale. We chain the `ticks` function to modify the default behavior of the axis function.
 
-## API Reference
+The purpose of `bore` is to create a higher-level API on top of D3 that can be used to create common chart types. Like how D3 has a built-in API for creating axes, `bore` has a built-in API for creating charts.
+
+In addition to providing chart types, `bore` also exports several useful utility constructs such as a text-wrapping, styled axes and color schemes.
+
+## Using `bore`
+
+- Add `bore` as a dependency:
+
+  ```bash
+  yarn add "https://github.com/MichiganDaily/bore.git"
+  ```
+
+   You can use a specific version or branch of `bore` by adding a `#` to the end and specifying a version or branch (e.g., `#v2.0.0`).
+
+- Import `bore`:
+
+  ```javascript
+  import * as bore from "bore";
+  ```
+
+- Bind your data to an SVG:
+
+  ```javascript
+  d3.select("figure")
+    .append("svg")
+    .datum(data)
+  ```
+
+  Currently, [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) are the most supported data type. We plan on better supporting other types of data in the future.
+
+- Call a `bore` chart on your SVG selection:
+
+  ```javascript
+  d3.select("figure")
+    .append("svg")
+    .datum(data)
+    .call(
+      bore.build(
+        new bore.BarChart()
+          .color(color)
+          .height(175)
+          .label(d => `${d[1].toPrecision(3)}%`)
+          .wrappx(75);
+      )
+    )
+  ```
+
+  Make note of the `new` keyword. Internally, `bore` implements each chart type as a class. The `new` keyword is necessary to create a new instance of a class (as is usual in OOP).
+  
+  Also make note of the `build` function that wraps the entire `BarChart` construction. Internally, this is necessary to correctly bind the `this` context of the chart to itself instead of to the D3 selection.
+
+  Using other chart types will follow a nearly identical pattern, though the functions that can be chained to a chart type may differ from chart to chart. Refer to the [API Reference](#api-reference) for more details.
+
+<!-- Make a note of redrawing, small multiples, resizing -->
+
+## [API Reference](#api-reference)
 
 TODO
 
 ## Developing `bore`
 
-Run `yarn build` to build a minified version of `bore` to `dist`,
+Run `yarn build` to create a minified version of `bore` in the `dist` directory.
 
 ### Install `bore` and `cookie`
 
