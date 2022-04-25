@@ -1,5 +1,5 @@
 {
-  "name": "bore",
+  "name": "@michigandaily/bore",
   "version": "2.0.2",
   "description": "The Michigan Daily D3 graphing library",
   "type": "module",
