@@ -96,7 +96,7 @@ Work on a branch if you plan on adding something to `bore` -- the `main` branch 
 ### Link `bore` and `cookie`
 
 1. In `bore`, run `yarn link`.
-2. In `cookie`, run `yarn link "bore"`.
+2. In `cookie`, run `yarn link "@michigandaily/bore"`.
 3. Import `bore` in `cookie`:
 
    ```javascript
@@ -114,7 +114,7 @@ Whenever changes are made in `bore`, the `cookie` server will reload to reflect 
 
 When finished developing, unlink the repositories.
 
-1. In `cookie`, run `yarn unlink "bore"`.
+1. In `cookie`, run `yarn unlink "@michigandaily/bore"`.
 2. In `bore`, run `yarn unlink`.
 
 ### Git and releases
