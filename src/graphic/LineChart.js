@@ -59,11 +59,13 @@ export default class LineChart extends Visual {
       svg = select(svg)
         .attr("height", this.height());
 
-      const path = svg.append("path")
-        .datum(d);
+      const path = this.redraw() ? svg.select(".line-path") :
+        svg.append("path")
+          .attr("class", "line-path")
+          .datum(d);
 
       ((this.redraw()) ? svg.select(".y-axis") : svg.append("g"))
-        .call(this.yAxis()(this.y.get(svg.node())))
+        .call(this.yAxis()(this.y.get(svg.node()), this.redraw()))
         .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
@@ -86,7 +88,8 @@ export default class LineChart extends Visual {
         lineFunc.x(v => lx(v[this.xAccess()]));
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
-        path.attr("d", lineFunc)
+        const p = this.redraw() ? path.transition().duration(100) : path;
+        p.attr("d", lineFunc)
           .attr("fill", "none")
           .attr("stroke", this.color())
           .attr("stroke-width", 5);
