@@ -12,9 +12,19 @@ export const xAxisTop = (width, scale, redraw) => g => {
   }
 }
 
-export const yAxisLeft = scale => g => {
-  g.call(axisLeft(scale).tickSize(0));
-  g.select(".domain").remove();
-  g.selectAll(".tick text")
-    .attr("font-weight", "bold");
+export const yAxisLeft = (scale, redraw) => g => {
+  const axis = axisLeft(scale);
+  const styleDomain = () => {
+    g.select(".domain").remove();
+    g.selectAll(".tick text")
+      .attr("font-weight", "bold");
+  }
+
+  if (redraw) {
+    g.transition().duration(1000).call(axis)
+      .on("start", styleDomain);
+  } else {
+    g.call(axis);
+    styleDomain()
+  }
 }
