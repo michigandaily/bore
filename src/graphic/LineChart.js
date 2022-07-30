@@ -88,7 +88,7 @@ export default class LineChart extends Visual {
         lineFunc.x(v => lx(v[this.xAccess()]));
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
-        const p = this.redraw() ? path.transition().duration(100) : path;
+        const p = this.redraw() ? path.transition().duration(1000) : path;
         p.attr("d", lineFunc)
           .attr("fill", "none")
           .attr("stroke", this.color())
