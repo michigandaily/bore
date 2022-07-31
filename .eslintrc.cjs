@@ -11,6 +11,8 @@ module.exports = {
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
   plugins: ["prettier"],
   rules: {
+    "no-var": "error",
+    eqeqeq: "error",
     "prettier/prettier": [
       "error",
       {
