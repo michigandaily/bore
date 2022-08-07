@@ -8,6 +8,7 @@ import { yAxisLeft } from "../util/axis";
 export default class LineChart extends Visual {
   #xAccess;
   #yAccess;
+  #curve;
 
   constructor() {
     super();
@@ -30,6 +31,10 @@ export default class LineChart extends Visual {
 
   yAccess(y) {
     return arguments.length ? ((this.#yAccess = y), this) : this.#yAccess;
+  }
+
+  curve(c) {
+    return arguments.length ? ((this.#curve = c), this) : this.#curve;
   }
 
   draw(selection) {
@@ -70,6 +75,10 @@ export default class LineChart extends Visual {
       const lineFunc = line().y((v) =>
         this.y.get(svg.node())(v[this.yAccess()])
       );
+
+      if (this.curve()) {
+        lineFunc.curve(this.curve());
+      }
 
       const xAxisGroup = (
         this.redraw() ? svg.select(".x-axis") : svg.append("g")
