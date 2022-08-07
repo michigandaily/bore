@@ -20,23 +20,6 @@ export default class BarChart extends Visual {
     this.y = null;
   }
 
-  xSplit(width, scale) {
-    return (g) => {
-      g.selectAll("line")
-        .data(scale.ticks(width / 80))
-        .join(
-          (enter) => enter.append("line").attr("x1", scale).attr("x2", scale),
-          (update) =>
-            (this.redraw() ? update.transition().duration(1000) : update)
-              .attr("x1", scale)
-              .attr("x2", scale)
-        )
-        .attr("stroke", "white")
-        .attr("stroke-width", 1)
-        .attr("y2", this.height() - this.margin().bottom - this.margin().top);
-    };
-  }
-
   bar(rect) {
     return rect
       .attr("class", "bar")
@@ -107,12 +90,6 @@ export default class BarChart extends Visual {
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${top})`);
 
-      const xSplitGroup = (
-        this.redraw() ? svg.select(".x-split") : svg.append("g")
-      )
-        .attr("class", "x-split")
-        .attr("transform", `translate(0, ${top})`);
-
       const labels = svg
         .selectAll(".label")
         .data(d)
@@ -129,7 +106,6 @@ export default class BarChart extends Visual {
         const lx = this.x.get(svg.node()).range([left, w - right]);
 
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
-        xSplitGroup.call(this.xSplit(w, lx));
 
         const min = lx.domain()[0];
 
