@@ -25,11 +25,11 @@ export default class LineChart extends Visual {
   }
 
   xAccess(x) {
-    return (arguments.length) ? (this.#xAccess = x, this) : this.#xAccess;
+    return arguments.length ? ((this.#xAccess = x), this) : this.#xAccess;
   }
 
   yAccess(y) {
-    return (arguments.length) ? (this.#yAccess = y, this) : this.#yAccess;
+    return arguments.length ? ((this.#yAccess = y), this) : this.#yAccess;
   }
 
   draw(selection) {
@@ -43,49 +43,50 @@ export default class LineChart extends Visual {
       }
 
       this.x = (
-        (!this.xScale()
-          ? scaleTime().domain(extent(d, v => v[this.xAccess()]))
+        !this.xScale()
+          ? scaleTime().domain(extent(d, (v) => v[this.xAccess()]))
           : this.xScale()
-        )
-        .range([left, this.width() - right])
-      )
+      ).range([left, this.width() - right]);
 
-      this.y.set(svg, ((!this.yScale())
-        ? scaleLinear().domain([0, max(d, v => v[this.yAccess()])])
-        : this.yScale())
-        .range([this.height() - bottom, top])
+      this.y.set(
+        svg,
+        (!this.yScale()
+          ? scaleLinear().domain([0, max(d, (v) => v[this.yAccess()])])
+          : this.yScale()
+        ).range([this.height() - bottom, top])
       );
 
-      svg = select(svg)
-        .attr("height", this.height());
+      svg = select(svg).attr("height", this.height());
 
-      const path = this.redraw() ? svg.select(".line-path") :
-        svg.append("path")
-          .attr("class", "line-path")
-          .datum(d);
+      const path = this.redraw()
+        ? svg.select(".line-path")
+        : svg.append("path").attr("class", "line-path").datum(d);
 
-      ((this.redraw()) ? svg.select(".y-axis") : svg.append("g"))
+      (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
         .call(this.yAxis()(this.y.get(svg.node()), this.redraw()))
         .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
-      const lineFunc = line()
-        .y(v => this.y.get(svg.node())(v[this.yAccess()]));
+      const lineFunc = line().y((v) =>
+        this.y.get(svg.node())(v[this.yAccess()])
+      );
 
-      const xAxisGroup = ((this.redraw()) ? svg.select(".x-axis") : svg.append("g"))
+      const xAxisGroup = (
+        this.redraw() ? svg.select(".x-axis") : svg.append("g")
+      )
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${this.height() - bottom})`);
 
       const render = () => {
         const cw = svg.node().parentNode.clientWidth;
         // eslint-disable-next-line no-nested-ternary
-        const w = (this.resize()) ? cw : (cw < this.width()) ? cw : this.width();
+        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
         const lx = this.x.range([left, w - right]);
 
-        lineFunc.x(v => lx(v[this.xAccess()]));
+        lineFunc.x((v) => lx(v[this.xAccess()]));
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         const p = this.redraw() ? path.transition().duration(1000) : path;
@@ -93,7 +94,7 @@ export default class LineChart extends Visual {
           .attr("fill", "none")
           .attr("stroke", this.color())
           .attr("stroke-width", 5);
-      }
+      };
 
       render();
       select(window).on(`resize.${i}`, render);

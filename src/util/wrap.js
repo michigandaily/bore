@@ -1,6 +1,6 @@
 import { select } from "d3";
 
-const length = el => el.node().getComputedTextLength();
+const length = (el) => el.node().getComputedTextLength();
 
 // This function is adapted from a Mike Bostock implementation of text wrapping
 // https://bl.ocks.org/mbostock/7555321
@@ -12,7 +12,7 @@ const wrap = (selection, w) => {
   const lencomp = (text, context) => {
     l = length(text);
     return Math.max(l, context);
-  }
+  };
 
   // eslint-disable-next-line func-names
   selection.each(function () {
@@ -27,14 +27,10 @@ const wrap = (selection, w) => {
     let line = [];
     const x = text.attr("x");
     const y = text.attr("y");
-    let tspan = text
-      .text(null)
-      .append("tspan")
-      .attr("x", x)
-      .attr("y", y);
+    let tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
 
     // eslint-disable-next-line no-cond-assign
-    while (word = words.pop()) {
+    while ((word = words.pop())) {
       line.push(word);
       tspan.text(line.join(" "));
 
@@ -60,7 +56,7 @@ const wrap = (selection, w) => {
     }
   });
 
-  return (maxSpanL && maxSpanL < maxTextL) ? maxSpanL : maxTextL;
-}
+  return maxSpanL && maxSpanL < maxTextL ? maxSpanL : maxTextL;
+};
 
 export default wrap;
