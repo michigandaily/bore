@@ -65,7 +65,7 @@ export default class BarChart extends Visual {
         !this.yScale()
           ? scaleBand().domain(d.keys()).padding(0.3)
           : this.yScale()
-      ).range([this.height() - bottom, top]);
+      ).range([top, this.height() - bottom]);
 
       svg = select(svg).attr("height", this.height());
 
