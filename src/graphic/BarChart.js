@@ -23,7 +23,7 @@ export default class BarChart extends Visual {
   bar(rect) {
     return rect
       .attr("class", "bar")
-      .attr("y", d => this.y(d[0]))
+      .attr("y", (d) => this.y(d[0]))
       .attr("height", this.y.bandwidth())
       .attr("fill", this.color());
   }
@@ -32,7 +32,7 @@ export default class BarChart extends Visual {
     return text
       .attr("class", "label")
       .attr("dx", "0.25em")
-      .attr("y", d => this.y(d[0]) + this.y.bandwidth() / 2)
+      .attr("y", (d) => this.y(d[0]) + this.y.bandwidth() / 2)
       .attr("alignment-baseline", "central")
       .attr("font-family", "sans-serif")
       .attr("font-weight", 600)
@@ -51,39 +51,47 @@ export default class BarChart extends Visual {
         this.width(svg.parentNode.clientWidth);
       }
 
-      this.x.set(svg, ((!this.xScale())
-        ? scaleLinear().domain([0, max(d.values())]).nice()
-        : this.xScale())
-        .range([left, this.width() - right])
+      this.x.set(
+        svg,
+        (!this.xScale()
+          ? scaleLinear()
+              .domain([0, max(d.values())])
+              .nice()
+          : this.xScale()
+        ).range([left, this.width() - right])
       );
 
-      this.y = ((!this.yScale())
-        ? scaleBand().domain(d.keys()).padding(0.3)
-        : this.yScale())
-        .range([this.height() - bottom, top]);
+      this.y = (
+        !this.yScale()
+          ? scaleBand().domain(d.keys()).padding(0.3)
+          : this.yScale()
+      ).range([this.height() - bottom, top]);
 
-      svg = select(svg)
-        .attr("height", this.height());
+      svg = select(svg).attr("height", this.height());
 
-      ((this.redraw()) ? svg.select(".y-axis") : svg.append("g"))
+      (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
         .call(this.yAxis()(this.y))
-        .call(g => {
+        .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
         })
         .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
-      const bars = svg.selectAll(".bar")
+      const bars = svg
+        .selectAll(".bar")
         .data(d)
         .join("rect")
         .call(this.bar.bind(this));
 
-      const xAxisGroup = ((this.redraw()) ? svg.select(".x-axis") : svg.append("g"))
+      const xAxisGroup = (
+        this.redraw() ? svg.select(".x-axis") : svg.append("g")
+      )
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${top})`);
 
-      const labels = svg.selectAll(".label")
+      const labels = svg
+        .selectAll(".label")
         .data(d)
         .join("text")
         .call(this.barLabel.bind(this));
@@ -91,24 +99,25 @@ export default class BarChart extends Visual {
       const render = () => {
         const cw = svg.node().parentNode.clientWidth;
         // eslint-disable-next-line no-nested-ternary
-        const w = (this.resize()) ? cw : (cw < this.width()) ? cw : this.width();
+        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
-        const lx = this.x.get(svg.node())
-          .range([left, w - right]);
+        const lx = this.x.get(svg.node()).range([left, w - right]);
 
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         const min = lx.domain()[0];
 
-        ((this.redraw()) ? bars.transition().duration(1000) : bars)
+        (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))
-          .attr("width", datum => lx(datum[1]) - lx(min));
+          .attr("width", (datum) => lx(datum[1]) - lx(min));
 
-        ((this.redraw()) ? labels.transition().duration(1000) : labels)
-          .attr("x", datum => lx(datum[1]));
-      }
+        (this.redraw() ? labels.transition().duration(1000) : labels).attr(
+          "x",
+          (datum) => lx(datum[1])
+        );
+      };
 
       render();
       select(window).on(`resize.${i}`, render);
