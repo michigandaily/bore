@@ -8,6 +8,7 @@ import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 const draw = () => {
   const figure = d3.select("figure");
+
   const data = new Map()
     .set("A", 5)
     .set("B", 2)
@@ -15,14 +16,15 @@ const draw = () => {
     .set("D", 10)
     .set("E", 4)
     .set("F", 1)
-    .set("G", 20)
+    .set("G", 20);
+
   figure.append("svg")
     .datum(data)
     .call(
       build(
         new BarChart()
       )
-    )
+    );
 }
 ```
 
@@ -96,17 +98,19 @@ import pym from "pym.js";
 import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 import datafile from "../data/data.csv";
+
 const draw = async () => {
-  const figure = d3.select("figure");
   const csvdata = await d3.csv(datafile, d3.autoType);
   const data = csvdata.map((d) => [d.key, d.value]);
+
+  const figure = d3.select("figure");
   figure.append("svg")
     .datum(new Map(data))
     .call(
       build(
         new BarChart()
       )
-    )
+    );
 };
 ```
 
