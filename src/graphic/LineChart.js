@@ -6,8 +6,6 @@ import Visual from "./Visual";
 import { yAxisLeft } from "../util/axis";
 
 export default class LineChart extends Visual {
-  #xAccess;
-  #yAccess;
   #curve;
 
   constructor() {
@@ -23,14 +21,6 @@ export default class LineChart extends Visual {
 
     this.x = null;
     this.y = local();
-  }
-
-  xAccess(x) {
-    return arguments.length ? ((this.#xAccess = x), this) : this.#xAccess;
-  }
-
-  yAccess(y) {
-    return arguments.length ? ((this.#yAccess = y), this) : this.#yAccess;
   }
 
   curve(c) {
@@ -49,14 +39,14 @@ export default class LineChart extends Visual {
 
       this.x = (
         !this.xScale()
-          ? scaleTime().domain(extent(d, (v) => v[this.xAccess()]))
+          ? scaleTime().domain(extent(d.keys(), (v) => v))
           : this.xScale()
       ).range([left, this.width() - right]);
 
       this.y.set(
         svg,
         (!this.yScale()
-          ? scaleLinear().domain([0, max(d, (v) => v[this.yAccess()])])
+          ? scaleLinear().domain([0, max(d.values(), (v) => v)])
           : this.yScale()
         ).range([this.height() - bottom, top])
       );
@@ -72,9 +62,7 @@ export default class LineChart extends Visual {
         .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
-      const lineFunc = line().y((v) =>
-        this.y.get(svg.node())(v[this.yAccess()])
-      );
+      const lineFunc = line().y((v) => this.y.get(svg.node())(v[1]));
 
       if (this.curve()) {
         lineFunc.curve(this.curve());
@@ -95,7 +83,7 @@ export default class LineChart extends Visual {
 
         const lx = this.x.range([left, w - right]);
 
-        lineFunc.x((v) => lx(v[this.xAccess()]));
+        lineFunc.x((v) => lx(v[0]));
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         const p = this.redraw() ? path.transition().duration(1000) : path;
