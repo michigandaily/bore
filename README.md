@@ -34,7 +34,7 @@ In addition to providing chart types, `bore` also exports several useful utility
 - Add `bore` as a dependency:
 
   ```bash
-  yarn add "https://github.com/MichiganDaily/bore.git"
+  yarn add michigandaily/bore
   ```
 
    You can use a specific version or branch of `bore` by adding a `#` to the end and specifying a version or branch (e.g., `#v2.0.0`).
@@ -42,7 +42,7 @@ In addition to providing chart types, `bore` also exports several useful utility
 - Import `bore`:
 
   ```javascript
-  import * as bore from "bore";
+  import * as bore from "@michigandaily/bore";
   ```
 
 - Bind your data to an SVG:
@@ -101,12 +101,12 @@ Work on a branch if you plan on adding something to `bore` -- the `main` branch 
 
    ```javascript
    // cookie/src/graphic/js/graphic.js
-   import * as bore from "bore";
+   import * as bore from "@michigandaily/bore";
    ```
 
 ### Serve `cookie`
 
-In `cookie`, run `make dev`.
+In `cookie`, run `yarn dev`.
 
 Whenever changes are made in `bore`, the `cookie` server will reload to reflect those changes.
 
