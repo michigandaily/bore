@@ -33,20 +33,20 @@ export default class GroupedBarChart extends Visual {
       .text(this.label());
   }
 
-  draw(selection) {
-    selection.each((data, i, s) => {
+  draw(selections) {
+    selections.each((data, i, selection) => {
       const { top, right, bottom } = this.margin();
       let { left } = this.margin();
 
-      let svg = s[i];
+      const node = selection[i];
       const keys = Object.keys(data.values().next().value);
 
       if (!this.width()) {
-        this.width(svg.parentNode.clientWidth);
+        this.width(node.parentNode.clientWidth);
       }
 
       this.x.set(
-        svg,
+        node,
         (!this.xScale()
           ? scaleLinear()
               .domain([
@@ -65,7 +65,7 @@ export default class GroupedBarChart extends Visual {
 
       this.y1 = scaleBand().domain(keys).range([0, this.y0.bandwidth()]);
 
-      svg = select(svg).attr("height", this.height());
+      const svg = select(node).attr("height", this.height());
 
       (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
         .call(this.yAxis()(this.y0))
@@ -105,13 +105,13 @@ export default class GroupedBarChart extends Visual {
         .call(this.barLabel.bind(this));
 
       const render = () => {
-        const cw = svg.node().parentNode.clientWidth;
+        const cw = node.parentNode.clientWidth;
         // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
-        const lx = this.x.get(svg.node()).range([left, w - right]);
+        const lx = this.x.get(node).range([left, w - right]);
 
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
         const min = lx.domain()[0];
