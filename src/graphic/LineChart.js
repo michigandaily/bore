@@ -27,14 +27,14 @@ export default class LineChart extends Visual {
     return arguments.length ? ((this.#curve = c), this) : this.#curve;
   }
 
-  draw(selection) {
-    selection.each((d, i, s) => {
+  draw(selections) {
+    selections.each((d, i, selection) => {
       const { top, right, bottom, left } = this.margin();
 
-      let svg = s[i];
+      const node = selection[i];
 
       if (!this.width()) {
-        this.width(svg.parentNode.clientWidth);
+        this.width(node.parentNode.clientWidth);
       }
 
       this.x = (
@@ -44,14 +44,14 @@ export default class LineChart extends Visual {
       ).range([left, this.width() - right]);
 
       this.y.set(
-        svg,
+        node,
         (!this.yScale()
           ? scaleLinear().domain([0, max(d.values(), (v) => v)])
           : this.yScale()
         ).range([this.height() - bottom, top])
       );
 
-      svg = select(svg).attr("height", this.height());
+      const svg = select(node).attr("height", this.height());
 
       const path = this.redraw()
         ? svg.select(".line-path")
