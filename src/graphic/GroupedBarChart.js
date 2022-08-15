@@ -33,6 +33,12 @@ export default class GroupedBarChart extends Visual {
       .text(this.label());
   }
 
+  defaultXScale(data) {
+    return scaleLinear()
+      .domain([0, max(data, (d) => max(Object.entries(d[1]), (v) => +v[1]))])
+      .nice();
+  }
+
   draw(selections) {
     selections.each((data, i, selection) => {
       const { top, right, bottom } = this.margin();
@@ -41,22 +47,11 @@ export default class GroupedBarChart extends Visual {
       const node = selection[i];
       const keys = Object.keys(data.values().next().value);
 
-      if (!this.width()) {
-        this.width(node.parentNode.clientWidth);
-      }
+      this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x.set(
-        node,
-        (!this.xScale()
-          ? scaleLinear()
-              .domain([
-                0,
-                max(data, (d) => max(Object.entries(d[1]), (v) => +v[1])),
-              ])
-              .nice()
-          : this.xScale()
-        ).range([left, this.width - right])
-      );
+      this.x
+        .set(node, this.xScale() ?? this.defaultXScale())
+        .range([left, this.width - right]);
 
       this.y0 = scaleBand()
         .domain(data.keys())
@@ -67,20 +62,18 @@ export default class GroupedBarChart extends Visual {
 
       const svg = select(node).attr("height", this.height());
 
-      (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
+      this.appendOnce(svg, "g", "y-axis")
         .call(this.yAxis()(this.y0))
         .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
         })
-        .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
-      const xAxisGroup = (
-        this.redraw() ? svg.select(".x-axis") : svg.append("g")
-      )
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${top})`);
+      const xAxisGroup = this.appendOnce(svg, "g", "x-axis").attr(
+        "transform",
+        `translate(0, ${top})`
+      );
 
       const groups = svg
         .selectAll(".bargroup")
