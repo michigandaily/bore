@@ -1,7 +1,13 @@
-/* eslint-disable lines-between-class-members */
-/* eslint-disable no-return-assign */
-
-import { local, select, scaleLinear, scaleTime, max, extent, line } from "d3";
+import {
+  local,
+  select,
+  scaleLinear,
+  scaleTime,
+  max,
+  extent,
+  line,
+  curveLinear,
+} from "d3";
 import Visual from "./Visual";
 import { yAxisLeft } from "../util/axis";
 
@@ -18,6 +24,7 @@ export default class LineChart extends Visual {
     this.wrappx(20);
     this.xAxis(null);
     this.yAxis(yAxisLeft);
+    this.curve(curveLinear);
 
     this.x = null;
     this.y = local();
@@ -27,55 +34,54 @@ export default class LineChart extends Visual {
     return arguments.length ? ((this.#curve = c), this) : this.#curve;
   }
 
+  defaultXScale(data) {
+    return scaleTime().domain(extent(data.keys(), (v) => v));
+  }
+
+  defaultYScale(data) {
+    return scaleLinear().domain([0, max(data.values(), (v) => v)]);
+  }
+
+  appendOnce(svg, element, classSelector) {
+    return this.redraw()
+      ? svg.select(`.${classSelector}`)
+      : svg.append(element).attr("class", classSelector);
+  }
+
   draw(selections) {
-    selections.each((d, i, selection) => {
+    selections.each((data, i, selection) => {
       const { top, right, bottom, left } = this.margin();
 
       const node = selection[i];
 
-      if (!this.width()) {
-        this.width(node.parentNode.clientWidth);
-      }
+      this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x = (
-        !this.xScale()
-          ? scaleTime().domain(extent(d.keys(), (v) => v))
-          : this.xScale()
-      ).range([left, this.width() - right]);
+      this.x = this.xScale() ?? this.defaultXScale(data);
+      this.x.range([left, this.width() - right]);
 
-      this.y.set(
-        node,
-        (!this.yScale()
-          ? scaleLinear().domain([0, max(d.values(), (v) => v)])
-          : this.yScale()
-        ).range([this.height() - bottom, top])
-      );
+      this.y
+        .set(node, this.yScale() ?? this.defaultYScale(data))
+        .range([this.height() - bottom, top]);
 
       const svg = select(node).attr("height", this.height());
 
-      const path = this.redraw()
-        ? svg.select(".line-path")
-        : svg.append("path").attr("class", "line-path").datum(d);
+      const path = this.appendOnce(svg, "path", "line-path");
+      path.datum(data);
 
-      (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
-        .call(this.yAxis()(this.y.get(svg.node()), this.redraw()))
-        .attr("class", "y-axis")
-        .attr("transform", `translate(${left}, 0)`);
+      const yAxisGroup = this.appendOnce(svg, "g", "y-axis");
+      yAxisGroup
+        .attr("transform", `translate(${left}, 0)`)
+        .call(this.yAxis()(this.y.get(node), this.redraw()));
 
-      const lineFunc = line().y((v) => this.y.get(svg.node())(v[1]));
+      const xAxisGroup = this.appendOnce(svg, "g", "x-axis");
+      xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
-      if (this.curve()) {
-        lineFunc.curve(this.curve());
-      }
-
-      const xAxisGroup = (
-        this.redraw() ? svg.select(".x-axis") : svg.append("g")
-      )
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${this.height() - bottom})`);
+      const lineFunc = line()
+        .y((v) => this.y.get(node)(v[1]))
+        .curve(this.curve());
 
       const render = () => {
-        const cw = svg.node().parentNode.clientWidth;
+        const cw = node.parentNode.clientWidth;
         // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
