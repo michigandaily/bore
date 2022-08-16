@@ -60,10 +60,10 @@ export default class BarChart extends Visual {
       this.width(this.width() ?? node.parentNode.clientWidth);
 
       this.x
-        .set(node, this.xScale() ?? this.defaultXScale())
+        .set(node, this.xScale() ?? this.defaultXScale(data))
         .range([left, this.width() - right]);
 
-      this.y = this.yScale() ?? this.defaultYScale();
+      this.y = this.yScale() ?? this.defaultYScale(data);
       this.y.range([top, this.height() - bottom]);
 
       const svg = select(node).attr("height", this.height());

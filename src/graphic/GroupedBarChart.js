@@ -50,7 +50,7 @@ export default class GroupedBarChart extends Visual {
       this.width(this.width() ?? node.parentNode.clientWidth);
 
       this.x
-        .set(node, this.xScale() ?? this.defaultXScale())
+        .set(node, this.xScale() ?? this.defaultXScale(data))
         .range([left, this.width - right]);
 
       this.y0 = scaleBand()
