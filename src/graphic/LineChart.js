@@ -42,10 +42,10 @@ export default class LineChart extends Visual {
     return scaleLinear().domain([0, max(data.values(), (v) => v)]);
   }
 
-  appendOnce(svg, element, classSelector) {
+  appendOnce(element, classSelector) {
     return this.redraw()
-      ? svg.select(`.${classSelector}`)
-      : svg.append(element).attr("class", classSelector);
+      ? this.svg.select(`.${classSelector}`)
+      : this.svg.append(element).attr("class", classSelector);
   }
 
   draw(selections) {
@@ -64,16 +64,17 @@ export default class LineChart extends Visual {
         .range([this.height() - bottom, top]);
 
       const svg = select(node).attr("height", this.height());
+      this.svg = svg;
 
-      const path = this.appendOnce(svg, "path", "line-path");
+      const path = this.appendOnce("path", "line-path");
       path.datum(data);
 
-      const yAxisGroup = this.appendOnce(svg, "g", "y-axis");
+      const yAxisGroup = this.appendOnce("g", "y-axis");
       yAxisGroup
         .attr("transform", `translate(${left}, 0)`)
         .call(this.yAxis()(this.y.get(node), this.redraw()));
 
-      const xAxisGroup = this.appendOnce(svg, "g", "x-axis");
+      const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
       const lineFunc = line()
