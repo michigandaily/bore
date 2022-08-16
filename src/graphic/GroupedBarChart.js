@@ -61,8 +61,9 @@ export default class GroupedBarChart extends Visual {
       this.y1 = scaleBand().domain(keys).range([0, this.y0.bandwidth()]);
 
       const svg = select(node).attr("height", this.height());
+      this.svg = svg;
 
-      this.appendOnce(svg, "g", "y-axis")
+      this.appendOnce("g", "y-axis")
         .call(this.yAxis()(this.y0))
         .call((g) => {
           const text = g.selectAll(".tick text");
@@ -70,7 +71,7 @@ export default class GroupedBarChart extends Visual {
         })
         .attr("transform", `translate(${left}, 0)`);
 
-      const xAxisGroup = this.appendOnce(svg, "g", "x-axis").attr(
+      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
         "transform",
         `translate(0, ${top})`
       );

@@ -60,9 +60,9 @@ export default class Visual {
     return arguments.length ? ((this.#wrappx = px), this) : this.#wrappx;
   }
 
-  appendOnce(svg, element, classSelector) {
+  appendOnce(element, classSelector) {
     return this.redraw()
-      ? svg.select(`.${classSelector}`)
-      : svg.append(element).attr("class", classSelector);
+      ? this.svg.select(`.${classSelector}`)
+      : this.svg.append(element).attr("class", classSelector);
   }
 }
