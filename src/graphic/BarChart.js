@@ -40,70 +40,68 @@ export default class BarChart extends Visual {
       .text(this.label());
   }
 
-  draw(selection) {
-    selection.each((d, i, s) => {
+  defaultXScale(data) {
+    return scaleLinear()
+      .domain([0, max(data.values())])
+      .nice();
+  }
+
+  defaultYScale(data) {
+    return scaleBand().domain(data.keys()).padding(0.3);
+  }
+
+  draw(selections) {
+    selections.each((data, i, selection) => {
       const { top, right, bottom } = this.margin();
       let { left } = this.margin();
 
-      let svg = s[i];
+      const node = selection[i];
 
-      if (!this.width()) {
-        this.width(svg.parentNode.clientWidth);
-      }
+      this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x.set(
-        svg,
-        (!this.xScale()
-          ? scaleLinear()
-              .domain([0, max(d.values())])
-              .nice()
-          : this.xScale()
-        ).range([left, this.width() - right])
-      );
+      this.x
+        .set(node, this.xScale() ?? this.defaultXScale(data))
+        .range([left, this.width() - right]);
 
-      this.y = (
-        !this.yScale()
-          ? scaleBand().domain(d.keys()).padding(0.3)
-          : this.yScale()
-      ).range([top, this.height() - bottom]);
+      this.y = this.yScale() ?? this.defaultYScale(data);
+      this.y.range([top, this.height() - bottom]);
 
-      svg = select(svg).attr("height", this.height());
+      const svg = select(node).attr("height", this.height());
+      this.svg = svg;
 
-      (this.redraw() ? svg.select(".y-axis") : svg.append("g"))
+      this.appendOnce("g", "y-axis")
         .call(this.yAxis()(this.y))
         .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
         })
-        .attr("class", "y-axis")
         .attr("transform", `translate(${left}, 0)`);
 
       const bars = svg
         .selectAll(".bar")
-        .data(d)
+        .data(data)
         .join("rect")
         .call(this.bar.bind(this));
 
-      const xAxisGroup = (
-        this.redraw() ? svg.select(".x-axis") : svg.append("g")
-      )
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${top})`);
+      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
+        "transform",
+        `translate(0, ${top})`
+      );
 
       const labels = svg
         .selectAll(".label")
-        .data(d)
+        .data(data)
         .join("text")
         .call(this.barLabel.bind(this));
 
       const render = () => {
-        const cw = svg.node().parentNode.clientWidth;
+        const cw = node.parentNode.clientWidth;
         // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
-        const lx = this.x.get(svg.node()).range([left, w - right]);
+        const lx = this.x.get(node).range([left, w - right]);
 
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
@@ -111,11 +109,11 @@ export default class BarChart extends Visual {
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))
-          .attr("width", (datum) => lx(datum[1]) - lx(min));
+          .attr("width", (d) => lx(d[1]) - lx(min));
 
         (this.redraw() ? labels.transition().duration(1000) : labels).attr(
           "x",
-          (datum) => lx(datum[1])
+          (d) => lx(d[1])
         );
       };
 
