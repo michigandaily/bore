@@ -49,7 +49,7 @@ export default class ScatterPlot extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y.get(node)))
+        .call(this.yAxis()(this.y.get(node), this.redraw()))
         .attr("transform", `translate(${left}, 0)`);
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
