@@ -2,6 +2,7 @@ import { local, scaleLinear, scaleBand, select, max } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
 import { xAxisTop, yAxisLeft } from "../util/axis";
+import "../css/grouped-bar-chart.scss";
 
 export default class GroupedBarChart extends Visual {
   constructor() {
@@ -26,10 +27,6 @@ export default class GroupedBarChart extends Visual {
       .attr("class", "label")
       .attr("dx", "0.25em")
       .attr("y", (d) => this.y1(d[0]) + this.y1.bandwidth() / 2)
-      .attr("alignment-baseline", "central")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -60,7 +57,9 @@ export default class GroupedBarChart extends Visual {
 
       this.y1 = scaleBand().domain(keys).range([0, this.y0.bandwidth()]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "grouped-bar-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
@@ -77,10 +76,10 @@ export default class GroupedBarChart extends Visual {
       );
 
       const groups = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(data)
         .join("g")
-        .attr("class", "bargroup")
+        .attr("class", "bar-group")
         .attr("transform", (d) => `translate(0, ${this.y0(d[0])})`);
 
       const bars = groups

@@ -2,7 +2,7 @@ import { local, select, scaleLinear, scaleBand, max } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
 import { xAxisTop, yAxisLeft } from "../util/axis";
-
+import "../css/bar-chart.scss";
 export default class BarChart extends Visual {
   constructor() {
     super();
@@ -33,10 +33,6 @@ export default class BarChart extends Visual {
       .attr("class", "label")
       .attr("dx", "0.25em")
       .attr("y", (d) => this.y(d[0]) + this.y.bandwidth() / 2)
-      .attr("alignment-baseline", "central")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -66,7 +62,9 @@ export default class BarChart extends Visual {
       this.y = this.yScale() ?? this.defaultYScale(data);
       this.y.range([top, this.height() - bottom]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "bar-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")

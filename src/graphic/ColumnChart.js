@@ -1,6 +1,7 @@
 import { local, scaleBand, scaleLinear, max, select } from "d3";
 import { xAxisBottom, yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
+import "../css/column-chart.scss";
 export default class ColumnChart extends Visual {
   constructor() {
     super();
@@ -41,10 +42,6 @@ export default class ColumnChart extends Visual {
       .attr("class", "label")
       .attr("y", (d) => scale(d[1]))
       .attr("dy", "-0.25em")
-      .attr("text-anchor", "middle")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -61,7 +58,9 @@ export default class ColumnChart extends Visual {
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "column-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
