@@ -5,6 +5,6 @@ export default class StackedBarChart extends Visual {
   }
 
   draw(selections) {
-    selections.each((data, i, selection) => {});
+    selections.each(() => {});
   }
 }

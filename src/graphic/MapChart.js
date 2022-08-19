@@ -5,6 +5,6 @@ export default class MapChart extends Visual {
   }
 
   draw(selections) {
-    selections.each((data, i, selection) => {});
+    selections.each(() => {});
   }
 }
