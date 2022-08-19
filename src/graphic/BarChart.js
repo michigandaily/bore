@@ -68,7 +68,7 @@ export default class BarChart extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y))
+        .call(this.yAxis()(this.y, this.redraw()))
         .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());

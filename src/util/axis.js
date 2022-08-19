@@ -14,6 +14,7 @@ export const xAxisBottom = (width, scale, redraw) => (g) => {
   selection.call(axis);
 };
 
-export const yAxisLeft = (scale) => (g) => {
-  g.call(axisLeft(scale).tickSize(0));
+export const yAxisLeft = (scale, redraw) => (g) => {
+  const selection = redraw ? g.transition().duration(1000) : g;
+  selection.call(axisLeft(scale).tickSize(0));
 };
