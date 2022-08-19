@@ -46,12 +46,13 @@ export default class ScatterPlot extends Visual {
         .range([this.height() - bottom, top]);
 
       const svg = select(node).attr("height", this.height());
+      this.svg = svg;
 
-      this.appendOnce(svg, "g", "y-axis")
+      this.appendOnce("g", "y-axis")
         .call(this.yAxis()(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
-      const xAxisGroup = this.appendOnce(svg, "g", "x-axis").attr(
+      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
         "transform",
         `translate(0, ${this.height() - bottom})`
       );
