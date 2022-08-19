@@ -55,7 +55,7 @@ export default class GroupedBarChart extends Visual {
 
       this.y0 = scaleBand()
         .domain(data.keys())
-        .range([this.height() - bottom, top])
+        .range([top, this.height() - bottom])
         .padding(0.3);
 
       this.y1 = scaleBand().domain(keys).range([0, this.y0.bandwidth()]);
