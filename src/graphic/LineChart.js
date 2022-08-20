@@ -39,11 +39,17 @@ export default class LineChart extends Visual {
   }
 
   defaultXScale(data) {
-    return scaleTime().domain(extent(data.keys(), (v) => v));
+    const domain = Array.isArray(data)
+      ? extent(data.map((d) => extent(d.keys())).flat())
+      : extent(data.keys());
+    return scaleTime().domain(domain);
   }
 
   defaultYScale(data) {
-    return scaleLinear().domain([0, max(data.values(), (v) => v)]);
+    const maximum = Array.isArray(data)
+      ? max(data.map((d) => max(d.values())))
+      : max(data.values());
+    return scaleLinear().domain([0, maximum]);
   }
 
   draw(selections) {
@@ -53,9 +59,7 @@ export default class LineChart extends Visual {
       const node = selection[i];
 
       this.width(this.width() ?? node.parentNode.clientWidth);
-
       this.x = this.xScale() ?? this.defaultXScale(data);
-
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
@@ -73,7 +77,16 @@ export default class LineChart extends Visual {
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
-      const path = this.appendOnce("path", "line-path").datum(data);
+      let path;
+      if (Array.isArray(data)) {
+        path = svg
+          .selectAll(".line-path")
+          .data(data)
+          .join("path")
+          .attr("class", "line-path");
+      } else {
+        path = this.appendOnce("path", "line-path").datum(data);
+      }
 
       const lineFunc = line()
         .y((v) => this.y.get(node)(v[1]))
@@ -86,7 +99,6 @@ export default class LineChart extends Visual {
         svg.attr("width", w);
 
         const lx = this.x.range([left, w - right]);
-
         lineFunc.x((v) => lx(v[0]));
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
