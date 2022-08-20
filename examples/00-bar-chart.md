@@ -29,7 +29,7 @@ const draw = () => {
 
 The bar chart data has to be a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) data structure. However, we typically deal with arrays and objects. We'll need to convert these data structures to maps.
 
-Consider the following CSV file of [tidy data](https://en.wikipedia.org/wiki/Tidy_data):
+Consider the following CSV file of [tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html):
 
 ```csv
 key,value
