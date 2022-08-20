@@ -7,7 +7,7 @@ export default class GroupedBarChart extends Visual {
   constructor() {
     super();
     this.height(200);
-    this.margin({ top: 20, right: 40, bottom: 20, left: 20 });
+    this.margin({ top: 20, right: 20, bottom: 20, left: 20 });
     this.color(() => "steelblue");
     this.label((d) => d[1]);
     this.resize(true);
