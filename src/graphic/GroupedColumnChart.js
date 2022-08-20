@@ -19,9 +19,21 @@ export default class GroupedColumnChart extends Visual {
     this.x1 = null;
   }
 
+  bar(rect) {
+    const scale = this.y.get(this.svg.node());
+    const min = scale.domain()[0];
+    const selection = this.redraw() ? rect.transition().duration(1000) : rect;
+    return selection
+      .attr("y", (d) => scale(d[1]))
+      .attr("height", (d) => scale(min) - scale(d[1]))
+      .attr("fill", this.color());
+  }
+
   barLabel(text) {
     const scale = this.y.get(this.svg.node());
-    return text
+    const selection = this.redraw() ? text.transition().duration(1000) : text;
+    return selection
+      .attr("y", (d) => scale(d[1]))
       .attr("class", "label")
       .attr("dy", "-0.25em")
       .attr("y", (d) => scale(d[1]))
@@ -71,26 +83,20 @@ export default class GroupedColumnChart extends Visual {
         .join("g")
         .attr("class", "bargroup");
 
-      const scale = this.y.get(this.svg.node());
-      const min = scale.domain()[0];
-
       const bars = groups
         .selectAll("rect")
         .data((d) => Object.entries(d[1]))
         .join("rect")
-        .attr("y", (d) => scale(d[1]))
-        .attr("height", (d) => scale(min) - scale(d[1]))
-        .attr("fill", this.color());
+        .call(this.bar.bind(this));
 
       const labels = groups
         .selectAll("text")
         .data((d) => Object.entries(d[1]))
         .join("text")
-        .attr("y", (d) => scale(d[1]))
         .call(this.barLabel.bind(this));
 
       const render = () => {
-        const cw = svg.node().parentNode.clientWidth;
+        const cw = node.parentNode.clientWidth;
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
@@ -101,15 +107,8 @@ export default class GroupedColumnChart extends Visual {
         xAxisGroup.call(this.xAxis()(w, this.x0, this.redraw()));
 
         groups.attr("transform", (d) => `translate(${this.x0(d[0])}, 0)`);
-
-        (this.redraw() ? bars.transition().duration(1000) : bars)
-          .attr("x", (d) => this.x1(d[0]))
-          .attr("width", this.x1.bandwidth());
-
-        (this.redraw() ? labels.transition().duration(1000) : labels).attr(
-          "x",
-          (d) => this.x1(d[0]) + this.x1.bandwidth() / 2
-        );
+        bars.attr("x", (d) => this.x1(d[0])).attr("width", this.x1.bandwidth());
+        labels.attr("x", (d) => this.x1(d[0]) + this.x1.bandwidth() / 2);
       };
 
       render();
