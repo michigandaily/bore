@@ -10,6 +10,7 @@ import {
 } from "d3";
 import { xAxisBottom } from "../util/axis";
 import Visual from "./Visual";
+
 export default class StackedColumnChart extends Visual {
   constructor() {
     super();
@@ -53,7 +54,9 @@ export default class StackedColumnChart extends Visual {
       const { top, left, bottom, right } = this.margin();
       const node = selection[i];
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "stacked-column-chart");
       this.svg = svg;
 
       this.x = this.xScale() ?? this.defaultXScale(data);

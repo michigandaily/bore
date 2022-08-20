@@ -1,6 +1,5 @@
 import { local, select, scaleLinear, max, axisBottom, axisLeft } from "d3";
 import Visual from "./Visual";
-import "../css/scatter-plot.scss";
 
 export default class ScatterPlot extends Visual {
   constructor() {

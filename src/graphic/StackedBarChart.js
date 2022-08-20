@@ -2,6 +2,7 @@ import { local, max, scaleBand, scaleLinear, sum, select, stack } from "d3";
 import wrap from "../util/wrap";
 import { xAxisTop, yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
+
 export default class StackedBarChart extends Visual {
   constructor() {
     super();
@@ -40,7 +41,9 @@ export default class StackedBarChart extends Visual {
       this.y = this.yScale() ?? this.defaultYScale(data);
       this.y.range([top, this.height() - bottom]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "stacked-bar-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
