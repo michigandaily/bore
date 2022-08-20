@@ -21,7 +21,9 @@ export default class Visual {
   }
 
   margin(m) {
-    return arguments.length ? ((this.#margin = m), this) : this.#margin;
+    return arguments.length
+      ? ((this.#margin = { ...this.#margin, ...m }), this)
+      : this.#margin;
   }
 
   xScale(s) {
