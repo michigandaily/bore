@@ -29,7 +29,8 @@ export default class ColumnChart extends Visual {
   bar(rect) {
     const scale = this.y.get(this.svg.node());
     const min = scale.domain()[0];
-    return rect
+    const selection = this.redraw() ? rect.transition().duration(1000) : rect;
+    return selection
       .attr("class", "bar")
       .attr("y", (d) => scale(d[1]))
       .attr("height", (d) => scale(min) - scale(d[1]))
@@ -38,7 +39,8 @@ export default class ColumnChart extends Visual {
 
   barLabel(text) {
     const scale = this.y.get(this.svg.node());
-    return text
+    const selection = this.redraw() ? text.transition().duration(1000) : text;
+    return selection
       .attr("class", "label")
       .attr("y", (d) => scale(d[1]))
       .attr("dy", "-0.25em")
@@ -85,8 +87,7 @@ export default class ColumnChart extends Visual {
       );
 
       const render = () => {
-        const cw = svg.node().parentNode.clientWidth;
-        // eslint-disable-next-line no-nested-ternary
+        const cw = node.parentNode.clientWidth;
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         this.x.range([left, w - right]);
@@ -94,14 +95,8 @@ export default class ColumnChart extends Visual {
 
         xAxisGroup.call(this.xAxis()(w, this.x, this.redraw()));
 
-        (this.redraw() ? bars.transition().duration(1000) : bars)
-          .attr("x", (d) => this.x(d[0]))
-          .attr("width", this.x.bandwidth());
-
-        (this.redraw() ? labels.transition().duration(1000) : labels).attr(
-          "x",
-          (d) => this.x(d[0]) + this.x.bandwidth() / 2
-        );
+        bars.attr("x", (d) => this.x(d[0])).attr("width", this.x.bandwidth());
+        labels.attr("x", (d) => this.x(d[0]) + this.x.bandwidth() / 2);
       };
 
       render();
