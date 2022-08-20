@@ -1,5 +1,17 @@
+.grouped-column-chart .label {
+  text-anchor: middle;
+}
+
 .column-chart .label {
   text-anchor: middle;
+}
+
+.bar-chart .label {
+  alignment-baseline: central;
+}
+
+.grouped-bar-chart .label {
+  alignment-baseline: central;
 }
 
 .domain {
@@ -15,16 +27,4 @@
   font-family: "Open Sans";
   font-weight: 600;
   font-size: 12px;
-}
-
-.bar-chart .label {
-  alignment-baseline: central;
-}
-
-.grouped-bar-chart .label {
-  alignment-baseline: central;
-}
-
-.grouped-column-chart .label {
-  text-anchor: middle;
 }
