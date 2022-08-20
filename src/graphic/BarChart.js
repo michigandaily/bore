@@ -43,7 +43,7 @@ export default class BarChart extends Visual {
   }
 
   defaultYScale(data) {
-    return scaleBand().domain(data.keys()).padding(0.3);
+    return scaleBand().domain(data.keys()).padding(0.25);
   }
 
   draw(selections) {

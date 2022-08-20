@@ -1,18 +1,22 @@
-import { local, scaleBand, scaleLinear, max, select } from "d3";
-import { xAxisBottom, yAxisLeft } from "../util/axis";
+import { local, scaleBand, scaleLinear, max, select, axisLeft } from "d3";
+import { xAxisBottom } from "../util/axis";
 import Visual from "./Visual";
 import "../css/column-chart.scss";
 export default class ColumnChart extends Visual {
   constructor() {
     super();
     this.height(400);
-    this.margin({ top: 20, right: 20, bottom: 40, left: 20 });
+    this.margin({ top: 20, right: 20, bottom: 40, left: 30 });
     this.color(() => "steelblue");
     this.resize(true);
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis(yAxisLeft);
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
+    this.label((d) => d[1]);
 
     this.x = null;
     this.y = local();

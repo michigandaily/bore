@@ -1,12 +1,24 @@
-import { select, local, scaleLinear, max, sum, scaleBand, stack } from "d3";
-import { xAxisBottom, yAxisLeft } from "../util/axis";
+import {
+  select,
+  local,
+  scaleLinear,
+  max,
+  sum,
+  scaleBand,
+  stack,
+  axisLeft,
+} from "d3";
+import { xAxisBottom } from "../util/axis";
 import Visual from "./Visual";
 export default class StackedColumnChart extends Visual {
   constructor() {
     super();
     this.height(300);
     this.margin({ top: 20, right: 20, left: 30, bottom: 20 });
-    this.yAxis(yAxisLeft);
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
     this.xAxis(xAxisBottom);
     this.resize(true);
     this.redraw(false);

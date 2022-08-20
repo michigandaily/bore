@@ -1,47 +1,30 @@
-.column-chart .x-axis .domain {
-  display: none;
-}
-.column-chart .y-axis .domain {
-  display: none;
-}
-.column-chart .y-axis .tick text {
-  font-weight: bold;
-}
 .column-chart .label {
   text-anchor: middle;
-  font-family: sans-serif;
-  font-weight: 600;
-  font-size: 10;
 }
 
-.grouped-bar-chart .x-axis .domain {
+.domain {
   display: none;
-}
-.grouped-bar-chart .y-axis .domain {
-  display: none;
-}
-.grouped-bar-chart .y-axis .tick text {
-  font-weight: bold;
-}
-.grouped-bar-chart .label {
-  alignment-baseline: central;
-  font-family: sans-serif;
-  font-weight: 600;
-  font-size: 10;
 }
 
-.bar-chart .x-axis .domain {
-  display: none;
+.tick text {
+  font-size: 12px;
+  font-family: "Open Sans";
 }
-.bar-chart .y-axis .domain {
-  display: none;
+
+.label {
+  font-family: "Open Sans";
+  font-weight: 600;
+  font-size: 12px;
 }
-.bar-chart .y-axis .tick text {
-  font-weight: bold;
-}
+
 .bar-chart .label {
   alignment-baseline: central;
-  font-family: sans-serif;
-  font-weight: 600;
-  font-size: 10;
+}
+
+.grouped-bar-chart .label {
+  alignment-baseline: central;
+}
+
+.grouped-column-chart .label {
+  text-anchor: middle;
 }
