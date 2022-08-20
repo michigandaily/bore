@@ -55,9 +55,7 @@ export default class BarChart extends Visual {
 
       this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x
-        .set(node, this.xScale() ?? this.defaultXScale(data))
-        .range([left, this.width() - right]);
+      this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y = this.yScale() ?? this.defaultYScale(data);
       this.y.range([top, this.height() - bottom]);
@@ -94,16 +92,13 @@ export default class BarChart extends Visual {
 
       const render = () => {
         const cw = node.parentNode.clientWidth;
-        // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
-
         const min = lx.domain()[0];
+        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

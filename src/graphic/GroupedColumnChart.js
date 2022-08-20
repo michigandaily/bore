@@ -41,10 +41,6 @@ export default class GroupedColumnChart extends Visual {
       .attr("class", "label")
       .attr("dy", "-0.25em")
       .attr("y", (d) => scale(d[1]))
-      .attr("text-anchor", "middle")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -84,10 +80,10 @@ export default class GroupedColumnChart extends Visual {
       );
 
       const groups = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(data)
         .join("g")
-        .attr("class", "bargroup");
+        .attr("class", "bar-group");
 
       const bars = groups
         .selectAll("rect")

@@ -77,10 +77,10 @@ export default class StackedColumnChart extends Visual {
       const series = stack().keys(this.keys)(data.values());
 
       const rect = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(series)
         .join("g")
-        .attr("class", "bargroup")
+        .attr("class", "bar-group")
         .attr("fill", this.color())
         .selectAll("rect")
         .data((d) => d)

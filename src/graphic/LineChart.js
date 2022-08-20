@@ -55,7 +55,6 @@ export default class LineChart extends Visual {
       this.width(this.width() ?? node.parentNode.clientWidth);
 
       this.x = this.xScale() ?? this.defaultXScale(data);
-      this.x.range([left, this.width() - right]);
 
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))

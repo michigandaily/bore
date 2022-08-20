@@ -43,9 +43,7 @@ export default class ScatterPlot extends Visual {
 
       this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x
-        .set(node, this.xScale() ?? this.defaultXScale(data))
-        .range([left, this.width() - right]);
+      this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))

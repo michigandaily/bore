@@ -62,11 +62,11 @@ export default class StackedBarChart extends Visual {
       const series = stack().keys(this.keys)(data.values());
 
       const bars = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(series)
         .join("g")
         .attr("fill", this.color())
-        .attr("class", "bargroup")
+        .attr("class", "bar-group")
         .selectAll("rect")
         .data((d) => d)
         .join("rect")
