@@ -7,9 +7,10 @@ import {
   extent,
   line,
   curveLinear,
+  axisLeft,
 } from "d3";
 import Visual from "./Visual";
-import { yAxisLeft } from "../util/axis";
+import { xAxisBottom } from "../util/axis";
 
 export default class LineChart extends Visual {
   #curve;
@@ -17,13 +18,16 @@ export default class LineChart extends Visual {
   constructor() {
     super();
     this.height(150);
-    this.margin({ top: 20, right: 20, bottom: 20, left: 20 });
+    this.margin({ top: 20, right: 20, bottom: 20, left: 30 });
     this.color(() => "steelblue");
     this.resize(true);
     this.redraw(false);
     this.wrappx(20);
-    this.xAxis(null);
-    this.yAxis(yAxisLeft);
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
+    this.xAxis(xAxisBottom);
     this.curve(curveLinear);
 
     this.x = null;
@@ -63,11 +67,10 @@ export default class LineChart extends Visual {
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "line-chart");
       this.svg = svg;
-
-      const path = this.appendOnce("path", "line-path");
-      path.datum(data);
 
       const yAxisGroup = this.appendOnce("g", "y-axis");
       yAxisGroup
@@ -77,13 +80,14 @@ export default class LineChart extends Visual {
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
+      const path = this.appendOnce("path", "line-path").datum(data);
+
       const lineFunc = line()
         .y((v) => this.y.get(node)(v[1]))
         .curve(this.curve());
 
       const render = () => {
         const cw = node.parentNode.clientWidth;
-        // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
