@@ -2,37 +2,19 @@ import { axisTop, axisLeft, axisBottom } from "d3";
 
 export const xAxisTop = (width, scale, redraw) => (g) => {
   const axis = axisTop(scale).ticks(width / 80);
-  const removeDomain = () => g.select(".domain").remove();
-  if (redraw) {
-    g.transition().duration(1000).call(axis).on("start", removeDomain);
-  } else {
-    g.call(axis);
-    removeDomain();
-  }
-};
-
-export const yAxisLeft = (scale, redraw) => (g) => {
-  const axis = axisLeft(scale);
-  const styleDomain = () => {
-    g.select(".domain").remove();
-    g.selectAll(".tick text").attr("font-weight", "bold");
-  };
-
-  if (redraw) {
-    g.transition().duration(1000).call(axis).on("start", styleDomain);
-  } else {
-    g.call(axis);
-    styleDomain();
-  }
+  const selection = redraw ? g.transition().duration(1000) : g;
+  selection.call(axis);
 };
 
 export const xAxisBottom = (width, scale, redraw) => (g) => {
-  const axis = axisBottom(scale).ticks(width / 80);
-  const removeDomain = () => g.select(".domain").remove();
-  if (redraw) {
-    g.transition().duration(1000).call(axis).on("start", removeDomain);
-  } else {
-    g.call(axis);
-    removeDomain();
-  }
+  const axis = axisBottom(scale)
+    .ticks(width / 80)
+    .tickSize(0);
+  const selection = redraw ? g.transition().duration(1000) : g;
+  selection.call(axis);
+};
+
+export const yAxisLeft = (scale, redraw) => (g) => {
+  const selection = redraw ? g.transition().duration(1000) : g;
+  selection.call(axisLeft(scale).tickSize(0));
 };
