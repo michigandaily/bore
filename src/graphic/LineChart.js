@@ -46,12 +46,6 @@ export default class LineChart extends Visual {
     return scaleLinear().domain([0, max(data.values(), (v) => v)]);
   }
 
-  appendOnce(element, classSelector) {
-    return this.redraw()
-      ? this.svg.select(`.${classSelector}`)
-      : this.svg.append(element).attr("class", classSelector);
-  }
-
   draw(selections) {
     selections.each((data, i, selection) => {
       const { top, right, bottom, left } = this.margin();
