@@ -77,7 +77,7 @@ export default class StackedBarChart extends Visual {
         svg.attr("width", w);
         const lx = this.x.get(node).range([left, w - right]);
         xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
-        bars
+        (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("width", ([x0, x1]) => lx(x1) - lx(x0))
           .attr("x", ([x0]) => lx(x0));
       };
