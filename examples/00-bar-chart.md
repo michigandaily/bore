@@ -3,7 +3,6 @@
 Here's a basic bar chart:
 
 ```javascript
-import pym from "pym.js";
 import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 const draw = () => {
@@ -94,7 +93,6 @@ Here's how we can still use `BarChart`.
 Here's it all put together:
 
 ```javascript
-import pym from "pym.js";
 import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 import datafile from "../data/data.csv";
