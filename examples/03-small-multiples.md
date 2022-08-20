@@ -1,1 +1,3 @@
 # small-multiples
+
+`xScale`, `yScale`
