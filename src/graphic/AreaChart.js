@@ -77,7 +77,8 @@ export default class AreaChart extends Visual {
       const min = scale.domain()[0];
       const areaGenerator = area()
         .y1((d) => scale(d[1]))
-        .y0(scale(min));
+        .y0(scale(min))
+        .curve(this.curve());
 
       const render = () => {
         const w = this.getResponsiveWidth();
