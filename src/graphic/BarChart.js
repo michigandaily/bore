@@ -91,14 +91,12 @@ export default class BarChart extends Visual {
         .call(this.barLabel.bind(this));
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
-
+        const w = this.getResponsiveWidth();
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
         const min = lx.domain()[0];
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

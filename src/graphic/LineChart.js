@@ -93,8 +93,7 @@ export default class LineChart extends Visual {
         .curve(this.curve());
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
+        const w = this.getResponsiveWidth();
 
         svg.attr("width", w);
 

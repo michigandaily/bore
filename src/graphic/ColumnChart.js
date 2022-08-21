@@ -91,8 +91,7 @@ export default class ColumnChart extends Visual {
       );
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
+        const w = this.getResponsiveWidth();
 
         this.x.range([left, w - right]);
         svg.attr("width", w);

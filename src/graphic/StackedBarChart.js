@@ -74,8 +74,7 @@ export default class StackedBarChart extends Visual {
         .attr("height", this.y.bandwidth());
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
+        const w = this.getResponsiveWidth();
 
         svg.attr("width", w);
         const lx = this.x.get(node).range([left, w - right]);
