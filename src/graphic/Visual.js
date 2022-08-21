@@ -1,3 +1,5 @@
+import "../css/visual.scss";
+
 export default class Visual {
   #width;
   #height;

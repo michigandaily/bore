@@ -1,12 +1,25 @@
-import { select, local, scaleLinear, max, sum, scaleBand, stack } from "d3";
-import { xAxisBottom, yAxisLeft } from "../util/axis";
+import {
+  select,
+  local,
+  scaleLinear,
+  max,
+  sum,
+  scaleBand,
+  stack,
+  axisLeft,
+} from "d3";
+import { xAxisBottom } from "../util/axis";
 import Visual from "./Visual";
+
 export default class StackedColumnChart extends Visual {
   constructor() {
     super();
     this.height(300);
     this.margin({ top: 20, right: 20, left: 30, bottom: 20 });
-    this.yAxis(yAxisLeft);
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
     this.xAxis(xAxisBottom);
     this.resize(true);
     this.redraw(false);
@@ -41,7 +54,9 @@ export default class StackedColumnChart extends Visual {
       const { top, left, bottom, right } = this.margin();
       const node = selection[i];
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "stacked-column-chart");
       this.svg = svg;
 
       this.x = this.xScale() ?? this.defaultXScale(data);
@@ -62,10 +77,10 @@ export default class StackedColumnChart extends Visual {
       const series = stack().keys(this.keys)(data.values());
 
       const rect = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(series)
         .join("g")
-        .attr("class", "bargroup")
+        .attr("class", "bar-group")
         .attr("fill", this.color())
         .selectAll("rect")
         .data((d) => d)

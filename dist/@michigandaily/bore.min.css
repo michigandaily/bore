@@ -1,0 +1,30 @@
+.grouped-column-chart .label {
+  text-anchor: middle;
+}
+
+.column-chart .label {
+  text-anchor: middle;
+}
+
+.bar-chart .label {
+  alignment-baseline: central;
+}
+
+.grouped-bar-chart .label {
+  alignment-baseline: central;
+}
+
+.domain {
+  display: none;
+}
+
+.tick text {
+  font-size: 12px;
+  font-family: "Open Sans";
+}
+
+.label {
+  font-family: "Open Sans";
+  font-weight: 600;
+  font-size: 12px;
+}

@@ -1,6 +1,5 @@
-import { local, select, scaleLinear, max } from "d3";
+import { local, select, scaleLinear, max, axisBottom, axisLeft } from "d3";
 import Visual from "./Visual";
-import { yAxisLeft, xAxisBottom } from "../util/axis";
 
 export default class ScatterPlot extends Visual {
   constructor() {
@@ -10,8 +9,15 @@ export default class ScatterPlot extends Visual {
     this.color(() => "steelblue");
     this.resize(true);
     this.redraw(false);
-    this.xAxis(xAxisBottom);
-    this.yAxis(yAxisLeft);
+    this.xAxis((width, scale, redraw) => (g) => {
+      const axis = axisBottom(scale).ticks(width / 80);
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axis);
+    });
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
 
     this.x = local();
     this.y = local();
@@ -37,15 +43,15 @@ export default class ScatterPlot extends Visual {
 
       this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x
-        .set(node, this.xScale() ?? this.defaultXScale(data))
-        .range([left, this.width() - right]);
+      this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "scatter-plot");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")

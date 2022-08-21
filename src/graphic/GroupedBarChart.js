@@ -2,6 +2,7 @@ import { local, scaleLinear, scaleBand, select, max } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
 import { xAxisTop, yAxisLeft } from "../util/axis";
+import "../css/grouped-bar-chart.scss";
 
 export default class GroupedBarChart extends Visual {
   constructor() {
@@ -26,10 +27,6 @@ export default class GroupedBarChart extends Visual {
       .attr("class", "label")
       .attr("dx", "0.25em")
       .attr("y", (d) => this.y1(d[0]) + this.y1.bandwidth() / 2)
-      .attr("alignment-baseline", "central")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -49,9 +46,7 @@ export default class GroupedBarChart extends Visual {
 
       this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x
-        .set(node, this.xScale() ?? this.defaultXScale(data))
-        .range([left, this.width - right]);
+      this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y0 = scaleBand()
         .domain(data.keys())
@@ -60,7 +55,9 @@ export default class GroupedBarChart extends Visual {
 
       this.y1 = scaleBand().domain(keys).range([0, this.y0.bandwidth()]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "grouped-bar-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
@@ -77,10 +74,10 @@ export default class GroupedBarChart extends Visual {
       );
 
       const groups = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(data)
         .join("g")
-        .attr("class", "bargroup")
+        .attr("class", "bar-group")
         .attr("transform", (d) => `translate(0, ${this.y0(d[0])})`);
 
       const bars = groups
@@ -100,15 +97,13 @@ export default class GroupedBarChart extends Visual {
 
       const render = () => {
         const cw = node.parentNode.clientWidth;
-        // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
         const min = lx.domain()[0];
+        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

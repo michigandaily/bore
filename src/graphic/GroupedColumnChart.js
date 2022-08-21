@@ -1,18 +1,22 @@
-import { local, max, scaleLinear, select, scaleBand } from "d3";
+import { local, max, scaleLinear, select, scaleBand, axisLeft } from "d3";
 import Visual from "./Visual";
-import { xAxisBottom, yAxisLeft } from "../util/axis";
+import { xAxisBottom } from "../util/axis";
+import "../css/grouped-column-chart.scss";
 export default class GroupedColumnChart extends Visual {
   constructor() {
     super();
     this.height(400);
-    this.margin({ top: 20, right: 20, bottom: 40, left: 20 });
+    this.margin({ top: 20, right: 20, bottom: 40, left: 30 });
     this.color(() => "steelblue");
     this.label((d) => d[1]);
     this.resize(true);
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis(yAxisLeft);
+    this.yAxis((scale, redraw) => (g) => {
+      const selection = redraw ? g.transition().duration(1000) : g;
+      selection.call(axisLeft(scale));
+    });
 
     this.y = local();
     this.x0 = null;
@@ -37,10 +41,6 @@ export default class GroupedColumnChart extends Visual {
       .attr("class", "label")
       .attr("dy", "-0.25em")
       .attr("y", (d) => scale(d[1]))
-      .attr("text-anchor", "middle")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -65,7 +65,9 @@ export default class GroupedColumnChart extends Visual {
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "grouped-column-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
@@ -78,10 +80,10 @@ export default class GroupedColumnChart extends Visual {
       );
 
       const groups = svg
-        .selectAll(".bargroup")
+        .selectAll(".bar-group")
         .data(data)
         .join("g")
-        .attr("class", "bargroup");
+        .attr("class", "bar-group");
 
       const bars = groups
         .selectAll("rect")

@@ -2,7 +2,7 @@ import { local, select, scaleLinear, scaleBand, max } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
 import { xAxisTop, yAxisLeft } from "../util/axis";
-
+import "../css/bar-chart.scss";
 export default class BarChart extends Visual {
   constructor() {
     super();
@@ -33,10 +33,6 @@ export default class BarChart extends Visual {
       .attr("class", "label")
       .attr("dx", "0.25em")
       .attr("y", (d) => this.y(d[0]) + this.y.bandwidth() / 2)
-      .attr("alignment-baseline", "central")
-      .attr("font-family", "sans-serif")
-      .attr("font-weight", 600)
-      .attr("font-size", 10)
       .text(this.label());
   }
 
@@ -47,7 +43,7 @@ export default class BarChart extends Visual {
   }
 
   defaultYScale(data) {
-    return scaleBand().domain(data.keys()).padding(0.3);
+    return scaleBand().domain(data.keys()).padding(0.25);
   }
 
   draw(selections) {
@@ -59,14 +55,14 @@ export default class BarChart extends Visual {
 
       this.width(this.width() ?? node.parentNode.clientWidth);
 
-      this.x
-        .set(node, this.xScale() ?? this.defaultXScale(data))
-        .range([left, this.width() - right]);
+      this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y = this.yScale() ?? this.defaultYScale(data);
       this.y.range([top, this.height() - bottom]);
 
-      const svg = select(node).attr("height", this.height());
+      const svg = select(node)
+        .attr("height", this.height())
+        .attr("class", "bar-chart");
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
@@ -96,16 +92,13 @@ export default class BarChart extends Visual {
 
       const render = () => {
         const cw = node.parentNode.clientWidth;
-        // eslint-disable-next-line no-nested-ternary
         const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
 
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
-
         const min = lx.domain()[0];
+        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))
