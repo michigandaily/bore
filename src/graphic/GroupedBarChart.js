@@ -52,8 +52,6 @@ export default class GroupedBarChart extends Visual {
       const node = selection[i];
       const keys = Object.keys(data.values().next().value);
 
-      this.width(this.width() ?? node.parentNode.clientWidth);
-
       this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y0 = scaleBand()

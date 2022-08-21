@@ -59,8 +59,6 @@ export default class GroupedColumnChart extends Visual {
       const node = selection[i];
       const keys = Object.keys(data.values().next().value);
 
-      this.width(this.width() ?? node.parentNode.clientWidth);
-
       this.x0 = scaleBand().domain(data.keys()).padding(0.3);
       this.x1 = scaleBand().domain(keys);
 

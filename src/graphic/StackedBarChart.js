@@ -36,7 +36,6 @@ export default class StackedBarChart extends Visual {
       this.keys = Object.keys(data.values().next().value);
       const node = selection[i];
 
-      this.width(this.width() ?? node.parentNode.clientWidth);
       this.x.set(node, this.xScale() ?? this.defaultXScale(data));
 
       this.y = this.yScale() ?? this.defaultYScale(data);

@@ -61,7 +61,6 @@ export default class LineChart extends Visual {
 
       const node = selection[i];
 
-      this.width(this.width() ?? node.parentNode.clientWidth);
       this.x = this.xScale() ?? this.defaultXScale(data);
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))
