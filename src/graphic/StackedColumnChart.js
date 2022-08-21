@@ -16,9 +16,11 @@ export default class StackedColumnChart extends Visual {
     super();
     this.height(300);
     this.margin({ top: 20, right: 20, left: 30, bottom: 20 });
-    this.yAxis((scale, redraw) => (g) => {
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axisLeft(scale));
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        selection.call(axisLeft(scale));
+      };
     });
     this.xAxis(xAxisBottom);
     this.resize(true);
@@ -66,7 +68,7 @@ export default class StackedColumnChart extends Visual {
         .range([this.height() - bottom, top]);
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y.get(node), this.redraw()))
+        .call(this.yAxis().bind(this)(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
@@ -92,7 +94,7 @@ export default class StackedColumnChart extends Visual {
 
         svg.attr("width", w);
         this.x.range([left, w - right]);
-        xAxisGroup.call(this.xAxis()(w, this.x, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x));
 
         rect
           .attr("width", this.x.bandwidth())

@@ -61,7 +61,7 @@ export default class GroupedBarChart extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y0, this.redraw()))
+        .call(this.yAxis().bind(this)(this.y0))
         .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
@@ -102,7 +102,7 @@ export default class GroupedBarChart extends Visual {
 
         const lx = this.x.get(node).range([left, w - right]);
         const min = lx.domain()[0];
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

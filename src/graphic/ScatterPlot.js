@@ -9,14 +9,20 @@ export default class ScatterPlot extends Visual {
     this.color(() => "steelblue");
     this.resize(true);
     this.redraw(false);
-    this.xAxis((width, scale, redraw) => (g) => {
-      const axis = axisBottom(scale).ticks(width / 80);
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axis);
-    });
-    this.yAxis((scale, redraw) => (g) => {
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axisLeft(scale));
+    this.xAxis(
+      function (scale) {
+        return (g) => {
+          const axis = axisBottom(scale).ticks(this.getResponsiveWidth() / 80);
+          const selection = this.redraw() ? g.transition().duration(1000) : g;
+          selection.call(axis);
+        };
+      }.bind(this)
+    );
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        selection.call(axisLeft(scale));
+      };
     });
 
     this.x = local();
@@ -55,7 +61,7 @@ export default class ScatterPlot extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y.get(node), this.redraw()))
+        .call(this.yAxis().bind(this)(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
@@ -78,7 +84,7 @@ export default class ScatterPlot extends Visual {
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         circles.attr("cx", (d) => lx(d[0]));
       };

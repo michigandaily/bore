@@ -12,9 +12,11 @@ export default class ColumnChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis((scale, redraw) => (g) => {
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axisLeft(scale));
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        selection.call(axisLeft(scale));
+      };
     });
     this.label((d) => d[1]);
 
@@ -70,7 +72,7 @@ export default class ColumnChart extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y.get(node), this.redraw()))
+        .call(this.yAxis().bind(this)(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
       const bars = svg
@@ -96,7 +98,7 @@ export default class ColumnChart extends Visual {
         this.x.range([left, w - right]);
         svg.attr("width", w);
 
-        xAxisGroup.call(this.xAxis()(w, this.x, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x));
 
         bars.attr("x", (d) => this.x(d[0])).attr("width", this.x.bandwidth());
         labels.attr("x", (d) => this.x(d[0]) + this.x.bandwidth() / 2);

@@ -66,7 +66,7 @@ export default class BarChart extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y, this.redraw()))
+        .call(this.yAxis().bind(this)(this.y))
         .call((g) => {
           const text = g.selectAll(".tick text");
           left += wrap(text, this.wrappx());
@@ -96,7 +96,7 @@ export default class BarChart extends Visual {
 
         const lx = this.x.get(node).range([left, w - right]);
         const min = lx.domain()[0];
-        xAxisGroup.call(this.xAxis().bind(this));
+        xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

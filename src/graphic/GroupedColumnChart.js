@@ -13,9 +13,11 @@ export default class GroupedColumnChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis((scale, redraw) => (g) => {
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axisLeft(scale));
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        selection.call(axisLeft(scale));
+      };
     });
 
     this.y = local();
@@ -71,7 +73,7 @@ export default class GroupedColumnChart extends Visual {
       this.svg = svg;
 
       this.appendOnce("g", "y-axis")
-        .call(this.yAxis()(this.y.get(node), this.redraw()))
+        .call(this.yAxis().bind(this)(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
@@ -105,7 +107,7 @@ export default class GroupedColumnChart extends Visual {
         this.x0.range([left, w - right]);
         this.x1.range([0, this.x0.bandwidth()]);
 
-        xAxisGroup.call(this.xAxis()(w, this.x0, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x0));
 
         groups.attr("transform", (d) => `translate(${this.x0(d[0])}, 0)`);
         bars.attr("x", (d) => this.x1(d[0])).attr("width", this.x1.bandwidth());

@@ -72,7 +72,7 @@ export default class LineChart extends Visual {
       const yAxisGroup = this.appendOnce("g", "y-axis");
       yAxisGroup
         .attr("transform", `translate(${left}, 0)`)
-        .call(this.yAxis()(this.y.get(node), this.redraw()));
+        .call(this.yAxis().bind(this)(this.y.get(node)));
 
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
@@ -99,7 +99,7 @@ export default class LineChart extends Visual {
 
         const lx = this.x.range([left, w - right]);
         lineFunc.x((v) => lx(v[0]));
-        xAxisGroup.call(this.xAxis()(w, lx, this.redraw()));
+        xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         const p = this.redraw() ? path.transition().duration(1000) : path;
         p.attr("d", lineFunc)
