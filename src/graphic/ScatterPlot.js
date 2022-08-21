@@ -6,9 +6,11 @@ export default class ScatterPlot extends Visual {
     super();
     this.height(300);
     this.margin({ top: 20, right: 20, bottom: 40, left: 40 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
+    // this.label();
     this.resize(true);
     this.redraw(false);
+    // this.wrappx();
     this.xAxis(
       function (scale) {
         return (g) => {
@@ -48,9 +50,7 @@ export default class ScatterPlot extends Visual {
       const node = selection[i];
 
       this.width(this.width() ?? node.parentNode.clientWidth);
-
       this.x.set(node, this.xScale() ?? this.defaultXScale(data));
-
       this.y
         .set(node, this.yScale() ?? this.defaultYScale(data))
         .range([this.height() - bottom, top]);
@@ -75,12 +75,11 @@ export default class ScatterPlot extends Visual {
         .join("circle")
         .attr("class", "circle")
         .attr("fill", this.color())
-        .attr("r", () => 5)
+        .attr("r", 5)
         .attr("cy", (d) => this.y.get(node)(d[1]));
 
       const render = () => {
         const w = this.getResponsiveWidth();
-
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);

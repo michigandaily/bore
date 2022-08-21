@@ -7,7 +7,7 @@ export default class GroupedColumnChart extends Visual {
     super();
     this.height(400);
     this.margin({ top: 20, right: 20, bottom: 40, left: 30 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
     this.label((d) => d[1]);
     this.resize(true);
     this.redraw(false);
@@ -30,6 +30,7 @@ export default class GroupedColumnChart extends Visual {
     const min = scale.domain()[0];
     const selection = this.redraw() ? rect.transition().duration(1000) : rect;
     return selection
+      .attr("class", "bar")
       .attr("y", (d) => scale(d[1]))
       .attr("height", (d) => scale(min) - scale(d[1]))
       .attr("fill", this.color());
@@ -39,10 +40,9 @@ export default class GroupedColumnChart extends Visual {
     const scale = this.y.get(this.svg.node());
     const selection = this.redraw() ? text.transition().duration(1000) : text;
     return selection
-      .attr("y", (d) => scale(d[1]))
       .attr("class", "label")
-      .attr("dy", "-0.25em")
       .attr("y", (d) => scale(d[1]))
+      .attr("dy", "-0.25em")
       .text(this.label());
   }
 
@@ -55,6 +55,7 @@ export default class GroupedColumnChart extends Visual {
   draw(selections) {
     selections.each((data, i, selection) => {
       const { top, right, bottom, left } = this.margin();
+
       const node = selection[i];
       const keys = Object.keys(data.values().next().value);
 
@@ -88,20 +89,19 @@ export default class GroupedColumnChart extends Visual {
         .attr("class", "bar-group");
 
       const bars = groups
-        .selectAll("rect")
+        .selectAll(".bar")
         .data((d) => Object.entries(d[1]))
         .join("rect")
         .call(this.bar.bind(this));
 
       const labels = groups
-        .selectAll("text")
+        .selectAll(".label")
         .data((d) => Object.entries(d[1]))
         .join("text")
         .call(this.barLabel.bind(this));
 
       const render = () => {
         const w = this.getResponsiveWidth();
-
         svg.attr("width", w);
 
         this.x0.range([left, w - right]);

@@ -16,6 +16,11 @@ export default class StackedColumnChart extends Visual {
     super();
     this.height(300);
     this.margin({ top: 20, right: 20, left: 30, bottom: 20 });
+    this.color(() => "steelblue");
+    this.label((d) => d[1]);
+    this.resize(true);
+    this.redraw(false);
+    this.wrappx(50);
     this.yAxis(function (scale) {
       return (g) => {
         const selection = this.redraw() ? g.transition().duration(1000) : g;
@@ -23,11 +28,6 @@ export default class StackedColumnChart extends Visual {
       };
     });
     this.xAxis(xAxisBottom);
-    this.resize(true);
-    this.redraw(false);
-    this.color(() => "steelblue");
-    this.label((d) => d[1]);
-    this.wrappx(50);
 
     this.y = local();
     this.x = null;
@@ -46,6 +46,7 @@ export default class StackedColumnChart extends Visual {
     const scale = this.y.get(this.svg.node());
     const selection = this.redraw() ? rect.transition().duration(1000) : rect;
     return selection
+      .attr("class", "bar")
       .attr("y", (y) => scale(y[1]))
       .attr("height", ([y0, y1]) => scale(y0) - scale(y1));
   }
@@ -84,7 +85,7 @@ export default class StackedColumnChart extends Visual {
         .join("g")
         .attr("class", "bar-group")
         .attr("fill", this.color())
-        .selectAll("rect")
+        .selectAll(".bar")
         .data((d) => d)
         .join("rect")
         .call(this.bar.bind(this));

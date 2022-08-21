@@ -7,7 +7,8 @@ export default class ColumnChart extends Visual {
     super();
     this.height(400);
     this.margin({ top: 20, right: 20, bottom: 40, left: 30 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
+    this.label((d) => d[1]);
     this.resize(true);
     this.redraw(false);
     this.wrappx(50);
@@ -18,18 +19,9 @@ export default class ColumnChart extends Visual {
         selection.call(axisLeft(scale));
       };
     });
-    this.label((d) => d[1]);
 
     this.x = null;
     this.y = local();
-  }
-
-  defaultXScale(data) {
-    return scaleBand().domain(data.keys()).padding(0.3);
-  }
-
-  defaultYScale(data) {
-    return scaleLinear().domain([0, max(data.values())]);
   }
 
   bar(rect) {
@@ -51,6 +43,16 @@ export default class ColumnChart extends Visual {
       .attr("y", (d) => scale(d[1]))
       .attr("dy", "-0.25em")
       .text(this.label());
+  }
+
+  defaultXScale(data) {
+    return scaleBand().domain(data.keys()).padding(0.25);
+  }
+
+  defaultYScale(data) {
+    return scaleLinear()
+      .domain([0, max(data.values())])
+      .nice();
   }
 
   draw(selections) {
@@ -75,6 +77,11 @@ export default class ColumnChart extends Visual {
         .call(this.yAxis().bind(this)(this.y.get(node)))
         .attr("transform", `translate(${left}, 0)`);
 
+      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
+        "transform",
+        `translate(0, ${this.height() - bottom})`
+      );
+
       const bars = svg
         .selectAll(".bar")
         .data(data)
@@ -87,17 +94,11 @@ export default class ColumnChart extends Visual {
         .join("text")
         .call(this.barLabel.bind(this));
 
-      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
-        "transform",
-        `translate(0, ${this.height() - bottom})`
-      );
-
       const render = () => {
         const w = this.getResponsiveWidth();
-
-        this.x.range([left, w - right]);
         svg.attr("width", w);
 
+        this.x.range([left, w - right]);
         xAxisGroup.call(this.xAxis().bind(this)(this.x));
 
         bars.attr("x", (d) => this.x(d[0])).attr("width", this.x.bandwidth());

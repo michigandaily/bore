@@ -9,7 +9,7 @@ export default class GroupedBarChart extends Visual {
     super();
     this.height(200);
     this.margin({ top: 20, right: 20, bottom: 20, left: 20 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
     this.label((d) => d[1]);
     this.resize(true);
     this.redraw(false);
@@ -20,6 +20,14 @@ export default class GroupedBarChart extends Visual {
     this.x = local();
     this.y0 = null;
     this.y1 = null;
+  }
+
+  bar(rect) {
+    return rect
+      .attr("class", "bar")
+      .attr("y", (d) => this.y1(d[0]))
+      .attr("height", this.y1.bandwidth())
+      .attr("fill", this.color());
   }
 
   barLabel(text) {
@@ -81,28 +89,25 @@ export default class GroupedBarChart extends Visual {
         .attr("transform", (d) => `translate(0, ${this.y0(d[0])})`);
 
       const bars = groups
-        .selectAll("rect")
+        .selectAll(".bar")
         .data((d) => Object.entries(d[1]))
         .join("rect")
-        .attr("y", (d) => this.y1(d[0]))
-        .attr("height", this.y1.bandwidth())
-        .attr("fill", this.color());
+        .call(this.bar.bind(this));
 
       const labels = groups
-        .selectAll("text")
+        .selectAll(".label")
         .data((d) => Object.entries(d[1]))
         .join("text")
-        .attr("y", (d) => this.y1(d[0]))
         .call(this.barLabel.bind(this));
 
       const render = () => {
         const w = this.getResponsiveWidth();
-
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-        const min = lx.domain()[0];
         xAxisGroup.call(this.xAxis().bind(this)(lx));
+
+        const min = lx.domain()[0];
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

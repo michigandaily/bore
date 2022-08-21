@@ -8,7 +8,7 @@ export default class BarChart extends Visual {
     super();
     this.height(150);
     this.margin({ top: 20, right: 20, bottom: 20, left: 20 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
     this.label((d) => d[1]);
     this.resize(true);
     this.redraw(false);
@@ -73,16 +73,16 @@ export default class BarChart extends Visual {
         })
         .attr("transform", `translate(${left}, 0)`);
 
+      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
+        "transform",
+        `translate(0, ${top})`
+      );
+
       const bars = svg
         .selectAll(".bar")
         .data(data)
         .join("rect")
         .call(this.bar.bind(this));
-
-      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
-        "transform",
-        `translate(0, ${top})`
-      );
 
       const labels = svg
         .selectAll(".label")
@@ -95,8 +95,9 @@ export default class BarChart extends Visual {
         svg.attr("width", w);
 
         const lx = this.x.get(node).range([left, w - right]);
-        const min = lx.domain()[0];
         xAxisGroup.call(this.xAxis().bind(this)(lx));
+
+        const min = lx.domain()[0];
 
         (this.redraw() ? bars.transition().duration(1000) : bars)
           .attr("x", lx(min))

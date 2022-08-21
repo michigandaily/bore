@@ -8,7 +8,8 @@ export default class StackedBarChart extends Visual {
     super();
     this.height(200);
     this.margin({ top: 20, right: 20, bottom: 20, left: 20 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
+    // this.label();
     this.resize(true);
     this.redraw(false);
     this.wrappx(50);
@@ -67,9 +68,10 @@ export default class StackedBarChart extends Visual {
         .join("g")
         .attr("fill", this.color())
         .attr("class", "bar-group")
-        .selectAll("rect")
+        .selectAll(".bar")
         .data((d) => d)
         .join("rect")
+        .attr("class", "bar")
         .attr("y", (_, i) => this.y(Array.from(data.keys())[i]))
         .attr("height", this.y.bandwidth());
 

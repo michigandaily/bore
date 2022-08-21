@@ -19,15 +19,18 @@ export default class LineChart extends Visual {
     super();
     this.height(150);
     this.margin({ top: 20, right: 20, bottom: 20, left: 30 });
-    this.color(() => "steelblue");
+    this.color("steelblue");
+    // this.label();
     this.resize(true);
     this.redraw(false);
-    this.wrappx(20);
-    this.yAxis((scale, redraw) => (g) => {
-      const selection = redraw ? g.transition().duration(1000) : g;
-      selection.call(axisLeft(scale));
-    });
+    // this.wrappx();
     this.xAxis(xAxisBottom);
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        selection.call(axisLeft(scale));
+      };
+    });
     this.curve(curveLinear);
 
     this.x = null;
