@@ -1,5 +1,6 @@
 export * from "./util/color";
 export { default as wrap } from "./util/wrap";
+export { default as AreaChart } from "./graphic/AreaChart";
 export { default as BarChart } from "./graphic/BarChart";
 export { default as ColumnChart } from "./graphic/ColumnChart";
 export { default as GroupedBarChart } from "./graphic/GroupedBarChart";
