@@ -90,7 +90,7 @@ export default class LineChart extends Visual {
         path = this.appendOnce("path", "line-path").datum(data);
       }
 
-      const lineFunc = line()
+      const lineGenerator = line()
         .y((v) => this.y.get(node)(v[1]))
         .curve(this.curve());
 
@@ -100,11 +100,11 @@ export default class LineChart extends Visual {
         svg.attr("width", w);
 
         const lx = this.x.range([left, w - right]);
-        lineFunc.x((v) => lx(v[0]));
+        lineGenerator.x((v) => lx(v[0]));
         xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         this.getSelectionWithRedrawContext(path)
-          .attr("d", lineFunc)
+          .attr("d", lineGenerator)
           .attr("fill", "none")
           .attr("stroke", this.color())
           .attr("stroke-width", 5);
