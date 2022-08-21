@@ -53,7 +53,7 @@ In addition to providing chart types, `bore` also exports several useful utility
     .datum(data);
   ```
 
-  Currently, [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) are the most supported data type. We plan on better supporting other types of data in the future.
+  This library is being tested with [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) in mind, but it may also work with other iterables.
 
 - Call a `bore` chart on your SVG selection:
 
