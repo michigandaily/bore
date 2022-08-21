@@ -11,6 +11,7 @@ import {
 } from "d3";
 import Visual from "./Visual";
 import { xAxisBottom } from "../util/axis";
+import "../css/line-chart.scss";
 
 export default class LineChart extends Visual {
   #curve;
@@ -42,21 +43,26 @@ export default class LineChart extends Visual {
   }
 
   defaultXScale(data) {
-    const domain = Array.isArray(data)
-      ? extent(data.map((d) => extent(d.keys())).flat())
+    const domain = this.multiple
+      ? extent(
+          Array.from(data.values())
+            .map((d) => extent(d.keys()))
+            .flat()
+        )
       : extent(data.keys());
     return scaleTime().domain(domain);
   }
 
   defaultYScale(data) {
-    const maximum = Array.isArray(data)
-      ? max(data.map((d) => max(d.values())))
+    const maximum = this.multiple
+      ? max(Array.from(data.values()).map((d) => max(d.values())))
       : max(data.values());
-    return scaleLinear().domain([0, maximum]);
+    return scaleLinear().domain([0, maximum]).nice();
   }
 
   draw(selections) {
     selections.each((data, i, selection) => {
+      this.multiple = data.values().next().value instanceof Map;
       const { top, right, bottom, left } = this.margin();
 
       const node = selection[i];
@@ -80,12 +86,15 @@ export default class LineChart extends Visual {
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
       let path;
-      if (Array.isArray(data)) {
+      if (this.multiple) {
         path = svg
           .selectAll(".line-path")
           .data(data)
           .join("path")
-          .attr("class", "line-path");
+          .attr(
+            "class",
+            (d) => `line-path ${this.multiple ? d[0].toLowerCase() : ""}`
+          );
       } else {
         path = this.appendOnce("path", "line-path").datum(data);
       }
@@ -104,10 +113,8 @@ export default class LineChart extends Visual {
         xAxisGroup.call(this.xAxis().bind(this)(lx));
 
         this.getSelectionWithRedrawContext(path)
-          .attr("d", lineFunc)
-          .attr("fill", "none")
-          .attr("stroke", this.color())
-          .attr("stroke-width", 5);
+          .attr("d", (d) => lineFunc(this.multiple ? d[1] : d))
+          .attr("stroke", this.color());
       };
 
       render();
