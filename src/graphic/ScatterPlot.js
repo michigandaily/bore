@@ -73,8 +73,7 @@ export default class ScatterPlot extends Visual {
         .attr("cy", (d) => this.y.get(node)(d[1]));
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
+        const w = this.getResponsiveWidth();
 
         svg.attr("width", w);
 

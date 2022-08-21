@@ -69,4 +69,14 @@ export default class Visual {
       ? this.svg.select(`.${classSelector}`)
       : this.svg.append(element).attr("class", classSelector);
   }
+
+  getResponsiveWidth() {
+    // If the graphic should resize, return the parent container's width.
+    // If the graphic should not resize and the desired width is greater
+    // than the parent container's width, return the parent container's width.
+    // Otherwise, return the desired width.
+    const node = this.svg.node();
+    const cw = node.parentNode.clientWidth;
+    return this.resize() ? cw : cw < this.width() ? cw : this.width();
+  }
 }

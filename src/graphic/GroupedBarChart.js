@@ -96,8 +96,7 @@ export default class GroupedBarChart extends Visual {
         .call(this.barLabel.bind(this));
 
       const render = () => {
-        const cw = node.parentNode.clientWidth;
-        const w = this.resize() ? cw : cw < this.width() ? cw : this.width();
+        const w = this.getResponsiveWidth();
 
         svg.attr("width", w);
 
