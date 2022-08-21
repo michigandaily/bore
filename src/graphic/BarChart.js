@@ -97,14 +97,11 @@ export default class BarChart extends Visual {
 
         const min = lx.domain()[0];
 
-        (this.redraw() ? bars.transition().duration(1000) : bars)
+        this.getSelectionWithRedrawContext(bars)
           .attr("x", lx(min))
           .attr("width", (d) => lx(d[1]) - lx(min));
 
-        (this.redraw() ? labels.transition().duration(1000) : labels).attr(
-          "x",
-          (d) => lx(d[1])
-        );
+        this.getSelectionWithRedrawContext(labels).attr("x", (d) => lx(d[1]));
       };
 
       render();

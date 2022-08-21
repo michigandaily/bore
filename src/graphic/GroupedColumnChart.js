@@ -15,7 +15,7 @@ export default class GroupedColumnChart extends Visual {
     this.xAxis(xAxisBottom);
     this.yAxis(function (scale) {
       return (g) => {
-        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        const selection = this.getSelectionWithRedrawContext(g);
         selection.call(axisLeft(scale));
       };
     });
@@ -28,7 +28,7 @@ export default class GroupedColumnChart extends Visual {
   bar(rect) {
     const scale = this.y.get(this.svg.node());
     const min = scale.domain()[0];
-    const selection = this.redraw() ? rect.transition().duration(1000) : rect;
+    const selection = this.getSelectionWithRedrawContext(rect);
     return selection
       .attr("class", "bar")
       .attr("y", (d) => scale(d[1]))
@@ -38,7 +38,7 @@ export default class GroupedColumnChart extends Visual {
 
   barLabel(text) {
     const scale = this.y.get(this.svg.node());
-    const selection = this.redraw() ? text.transition().duration(1000) : text;
+    const selection = this.getSelectionWithRedrawContext(text);
     return selection
       .attr("class", "label")
       .attr("y", (d) => scale(d[1]))

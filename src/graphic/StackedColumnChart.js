@@ -23,7 +23,7 @@ export default class StackedColumnChart extends Visual {
     this.wrappx(50);
     this.yAxis(function (scale) {
       return (g) => {
-        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        const selection = this.getSelectionWithRedrawContext(g);
         selection.call(axisLeft(scale));
       };
     });
@@ -44,7 +44,7 @@ export default class StackedColumnChart extends Visual {
 
   bar(rect) {
     const scale = this.y.get(this.svg.node());
-    const selection = this.redraw() ? rect.transition().duration(1000) : rect;
+    const selection = this.getSelectionWithRedrawContext(rect);
     return selection
       .attr("class", "bar")
       .attr("y", (y) => scale(y[1]))

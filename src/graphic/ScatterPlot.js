@@ -15,14 +15,14 @@ export default class ScatterPlot extends Visual {
       function (scale) {
         return (g) => {
           const axis = axisBottom(scale).ticks(this.getResponsiveWidth() / 80);
-          const selection = this.redraw() ? g.transition().duration(1000) : g;
+          const selection = this.getSelectionWithRedrawContext(g);
           selection.call(axis);
         };
       }.bind(this)
     );
     this.yAxis(function (scale) {
       return (g) => {
-        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        const selection = this.getSelectionWithRedrawContext(g);
         selection.call(axisLeft(scale));
       };
     });

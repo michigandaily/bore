@@ -79,4 +79,8 @@ export default class Visual {
     const cw = node.parentNode.clientWidth;
     return this.resize() ? cw : cw < this.width() ? cw : this.width();
   }
+
+  getSelectionWithRedrawContext(selection) {
+    return this.redraw() ? selection.transition().duration(1000) : selection;
+  }
 }

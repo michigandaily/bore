@@ -27,7 +27,7 @@ export default class LineChart extends Visual {
     this.xAxis(xAxisBottom);
     this.yAxis(function (scale) {
       return (g) => {
-        const selection = this.redraw() ? g.transition().duration(1000) : g;
+        const selection = this.getSelectionWithRedrawContext(g);
         selection.call(axisLeft(scale));
       };
     });
@@ -103,8 +103,8 @@ export default class LineChart extends Visual {
         lineFunc.x((v) => lx(v[0]));
         xAxisGroup.call(this.xAxis().bind(this)(lx));
 
-        const p = this.redraw() ? path.transition().duration(1000) : path;
-        p.attr("d", lineFunc)
+        this.getSelectionWithRedrawContext(path)
+          .attr("d", lineFunc)
           .attr("fill", "none")
           .attr("stroke", this.color())
           .attr("stroke-width", 5);

@@ -81,7 +81,7 @@ export default class StackedBarChart extends Visual {
         const lx = this.x.get(node).range([left, w - right]);
         xAxisGroup.call(this.xAxis().bind(this)(lx));
 
-        (this.redraw() ? bars.transition().duration(1000) : bars)
+        this.getSelectionWithRedrawContext(bars)
           .attr("width", ([x0, x1]) => lx(x1) - lx(x0))
           .attr("x", ([x0]) => lx(x0));
       };
