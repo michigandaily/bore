@@ -1,4 +1,5 @@
-import { local, select, scaleLinear, max, axisBottom, axisLeft } from "d3";
+import { local, select, scaleLinear, max, axisBottom } from "d3";
+import { yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
 
 export default class ScatterPlot extends Visual {
@@ -20,12 +21,7 @@ export default class ScatterPlot extends Visual {
         };
       }.bind(this)
     );
-    this.yAxis(function (scale) {
-      return (g) => {
-        const selection = this.getSelectionWithRedrawContext(g);
-        selection.call(axisLeft(scale));
-      };
-    });
+    this.yAxis(yAxisLeft);
 
     this.x = local();
     this.y = local();

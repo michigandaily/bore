@@ -1,5 +1,5 @@
-import { local, scaleBand, scaleLinear, max, select, axisLeft } from "d3";
-import { xAxisBottom } from "../util/axis";
+import { local, scaleBand, scaleLinear, max, select } from "d3";
+import { xAxisBottom, yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
 import "../css/column-chart.scss";
 export default class ColumnChart extends Visual {
@@ -13,12 +13,7 @@ export default class ColumnChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis(function (scale) {
-      return (g) => {
-        const selection = this.getSelectionWithRedrawContext(g);
-        selection.call(axisLeft(scale));
-      };
-    });
+    this.yAxis(yAxisLeft);
 
     this.x = null;
     this.y = local();

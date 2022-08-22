@@ -1,6 +1,6 @@
-import { local, max, scaleLinear, select, scaleBand, axisLeft } from "d3";
+import { local, max, scaleLinear, select, scaleBand } from "d3";
 import Visual from "./Visual";
-import { xAxisBottom } from "../util/axis";
+import { xAxisBottom, yAxisLeft } from "../util/axis";
 import "../css/grouped-column-chart.scss";
 export default class GroupedColumnChart extends Visual {
   constructor() {
@@ -13,12 +13,7 @@ export default class GroupedColumnChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisBottom);
-    this.yAxis(function (scale) {
-      return (g) => {
-        const selection = this.getSelectionWithRedrawContext(g);
-        selection.call(axisLeft(scale));
-      };
-    });
+    this.yAxis(yAxisLeft);
 
     this.y = local();
     this.x0 = null;

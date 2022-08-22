@@ -1,7 +1,7 @@
-import { local, select, scaleLinear, scaleBand, max } from "d3";
+import { local, select, scaleLinear, scaleBand, max, axisLeft } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
-import { xAxisTop, yAxisLeft } from "../util/axis";
+import { xAxisTop } from "../util/axis";
 import "../css/bar-chart.scss";
 export default class BarChart extends Visual {
   constructor() {
@@ -14,7 +14,12 @@ export default class BarChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisTop);
-    this.yAxis(yAxisLeft);
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.getSelectionWithRedrawContext(g);
+        selection.call(axisLeft(scale).tickSize(0));
+      };
+    });
 
     this.x = local();
     this.y = null;

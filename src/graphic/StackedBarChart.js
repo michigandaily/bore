@@ -1,6 +1,15 @@
-import { local, max, scaleBand, scaleLinear, sum, select, stack } from "d3";
+import {
+  local,
+  max,
+  scaleBand,
+  scaleLinear,
+  sum,
+  select,
+  stack,
+  axisLeft,
+} from "d3";
 import wrap from "../util/wrap";
-import { xAxisTop, yAxisLeft } from "../util/axis";
+import { xAxisTop } from "../util/axis";
 import Visual from "./Visual";
 
 export default class StackedBarChart extends Visual {
@@ -14,7 +23,12 @@ export default class StackedBarChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisTop);
-    this.yAxis(yAxisLeft);
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.getSelectionWithRedrawContext(g);
+        selection.call(axisLeft(scale).tickSize(0));
+      };
+    });
 
     this.x = local();
     this.y = null;

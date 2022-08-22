@@ -7,6 +7,11 @@
   font-family: "Open Sans";
 }
 
+.tick line {
+  stroke: #c0c0c0;
+  stroke-opacity: 0.5;
+}
+
 .label {
   font-family: "Open Sans";
   font-weight: 600;

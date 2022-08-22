@@ -1,7 +1,7 @@
-import { local, scaleLinear, scaleBand, select, max } from "d3";
+import { local, scaleLinear, scaleBand, select, max, axisLeft } from "d3";
 import Visual from "./Visual";
 import wrap from "../util/wrap";
-import { xAxisTop, yAxisLeft } from "../util/axis";
+import { xAxisTop } from "../util/axis";
 import "../css/grouped-bar-chart.scss";
 
 export default class GroupedBarChart extends Visual {
@@ -15,7 +15,12 @@ export default class GroupedBarChart extends Visual {
     this.redraw(false);
     this.wrappx(50);
     this.xAxis(xAxisTop);
-    this.yAxis(yAxisLeft);
+    this.yAxis(function (scale) {
+      return (g) => {
+        const selection = this.getSelectionWithRedrawContext(g);
+        selection.call(axisLeft(scale).tickSize(0));
+      };
+    });
 
     this.x = local();
     this.y0 = null;

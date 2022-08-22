@@ -7,10 +7,9 @@ import {
   extent,
   line,
   curveLinear,
-  axisLeft,
 } from "d3";
 import Visual from "./Visual";
-import { xAxisBottom } from "../util/axis";
+import { xAxisBottom, yAxisLeft } from "../util/axis";
 import "../css/line-chart.scss";
 
 export default class LineChart extends Visual {
@@ -26,12 +25,7 @@ export default class LineChart extends Visual {
     this.redraw(false);
     // this.wrappx();
     this.xAxis(xAxisBottom);
-    this.yAxis(function (scale) {
-      return (g) => {
-        const selection = this.getSelectionWithRedrawContext(g);
-        selection.call(axisLeft(scale));
-      };
-    });
+    this.yAxis(yAxisLeft);
     this.curve(curveLinear);
 
     this.x = null;
