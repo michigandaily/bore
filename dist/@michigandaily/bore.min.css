@@ -1,17 +1,22 @@
+.column-chart .label {
+  text-anchor: middle;
+}
+
 .grouped-column-chart .label {
   text-anchor: middle;
 }
 
-.column-chart .label {
-  text-anchor: middle;
+.grouped-bar-chart .label {
+  alignment-baseline: central;
 }
 
 .bar-chart .label {
   alignment-baseline: central;
 }
 
-.grouped-bar-chart .label {
-  alignment-baseline: central;
+.line-chart .line-path {
+  stroke-width: 5px;
+  fill: none;
 }
 
 .domain {
@@ -21,6 +26,11 @@
 .tick text {
   font-size: 12px;
   font-family: "Open Sans";
+}
+
+.tick line {
+  stroke: #c0c0c0;
+  stroke-opacity: 0.5;
 }
 
 .label {
