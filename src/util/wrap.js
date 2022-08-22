@@ -14,7 +14,6 @@ const wrap = (selection, w) => {
     return Math.max(l, context);
   };
 
-  // eslint-disable-next-line func-names
   selection.each(function () {
     const text = select(this);
 
@@ -29,7 +28,6 @@ const wrap = (selection, w) => {
     const y = text.attr("y");
     let tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
 
-    // eslint-disable-next-line no-cond-assign
     while ((word = words.pop())) {
       line.push(word);
       tspan.text(line.join(" "));
