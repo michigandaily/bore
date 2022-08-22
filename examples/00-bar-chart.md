@@ -3,7 +3,6 @@
 Here's a basic bar chart:
 
 ```javascript
-import pym from "pym.js";
 import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 const draw = () => {
@@ -30,7 +29,7 @@ const draw = () => {
 
 The bar chart data has to be a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) data structure. However, we typically deal with arrays and objects. We'll need to convert these data structures to maps.
 
-Consider the following CSV file:
+Consider the following CSV file of [tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html):
 
 ```csv
 key,value
@@ -94,7 +93,6 @@ Here's how we can still use `BarChart`.
 Here's it all put together:
 
 ```javascript
-import pym from "pym.js";
 import * as d3 from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 import datafile from "../data/data.csv";
