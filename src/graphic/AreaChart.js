@@ -6,6 +6,8 @@ import {
   curveLinear,
   select,
   max,
+  stack,
+  sum,
   area,
   axisLeft,
 } from "d3";
@@ -45,11 +47,18 @@ export default class AreaChart extends Visual {
   }
 
   defaultYScale(data) {
-    return scaleLinear().domain([0, max(data.values())]);
+    const maximum = this.multiple
+      ? max(Array.from(data.values()).map((d) => sum(d.values())))
+      : max(data.values());
+    return scaleLinear().domain([0, maximum]).nice();
   }
 
   draw(selections) {
     selections.each((data, i, selection) => {
+      this.multiple = data.values().next().value instanceof Map;
+      if (this.multiple) {
+        this.keys = data.values().next().value.keys();
+      }
       const { left, top, right, bottom } = this.margin();
       const node = selection[i];
 
@@ -71,21 +80,38 @@ export default class AreaChart extends Visual {
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
 
-      const path = this.appendOnce("path", "area-path").datum(data);
+      if (this.multiple) {
+        this.series = stack()
+          .keys(this.keys)
+          .value((d, key) => d.get(key))(data.values());
+      }
 
       const scale = this.y.get(node);
       const min = scale.domain()[0];
       const areaGenerator = area()
         .y1((d) => scale(d[1]))
-        .y0(scale(min))
+        .y0((d) => scale(this.multiple ? d[0] : min))
         .curve(this.curve());
+
+      let path;
+      if (this.multiple) {
+        path = svg
+          .selectAll(".area-path")
+          .data(this.series)
+          .join("path")
+          .attr("class", "area-path");
+      } else {
+        path = this.appendOnce("path", "area-path").datum(data);
+      }
 
       const render = () => {
         const w = this.getResponsiveWidth();
         svg.attr("width", w);
 
         this.x.range([left, w - right]);
-        areaGenerator.x((d) => this.x(d[0]));
+        areaGenerator.x((d, i) =>
+          this.x(this.multiple ? Array.from(data.keys())[i] : d[0])
+        );
         xAxisGroup.call(this.xAxis().bind(this)(this.x));
 
         this.getSelectionWithRedrawContext(path)
