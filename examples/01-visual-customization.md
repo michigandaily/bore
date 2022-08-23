@@ -70,6 +70,8 @@ Perhaps it should be the case that if a `width` is specified, `bore` should assu
 
 The last caveat for setting width is that if the parent container's width is less than the specified width, `bore` will resize to fit the parent container, even if resizing is set to `false`.
 
+The appropriate responsive width is exposed through the `getResponsiveWidth` function.
+
 You can also specify the chart's margin with the `margin` method. You only need to pass in the `left`, `top`, `bottom`, or `right` properties that you want to change from default. In this example, we only want to change the left margin but leave all the other margins as default:
 
 ```javascript
@@ -105,11 +107,10 @@ Setting a custom scale is particularly useful when making small multiples. We'll
 
 You can change the chart's axes with the `xAxis` and `yAxis` methods.
 
-For the `xAxis` method, you need to pass in a [curried function](https://en.wikipedia.org/wiki/Currying) with `width`, `scale`, and `redraw` as the first set of parameters, and `g` as the second set of parameters:
+For the `xAxis` method, you need to pass in a [curried function](https://en.wikipedia.org/wiki/Currying) with `scale` as the first function parameter, and `g` as the second function parameter:
 
 ```javascript
 const height = 250;
-const bottom = 20;
 
 figure
   .append("svg")
@@ -118,16 +119,22 @@ figure
     build(
       new BarChart()
         .height(height)
-        .xAxis((width, scale, redraw) => (g) => {
-          g.attr("transform", `translate(0, ${height - bottom})`).call(
-            d3.axisBottom(scale).ticks(width / 80)
-          );
+        .xAxis(function (scale) {
+          return (g) => {
+            const width = this.getResponsiveWidth();
+            const { bottom } = this.margin();
+            g.attr("transform", `translate(0, ${height - bottom})`).call(
+              d3.axisBottom(scale).ticks(width / 80)
+            );
+          };
         })
     )
   );
 ```
 
-The `yAxis` method also requires a curried function but `width` is not needed in the first set of parameters (because the width of the container is not particularly important when drawing a bar chart's y-axis):
+Make note of the `function` keyword usage. This is necessary for having access to the appropriate `this` keyword inside the function body.
+
+The `yAxis` method also requires a curried function:
 
 ```javascript
 figure
@@ -136,13 +143,15 @@ figure
   .call(
     build(
       new BarChart()
-        .yAxis((scale, redraw) => (g) => {
+        .yAxis((scale) => (g) => {
           g.call(d3.axisLeft(scale).tickSize(0));
           g.select(".domain").remove();
         })
     )
   );
 ```
+
+In the above example, we don't use the `function` keyword because we don't use `this`.
 
 We'll return to the `redraw` parameter when we get to updating data.
 
