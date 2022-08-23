@@ -53,7 +53,7 @@ In addition to providing chart types, `bore` also exports several useful utility
     .datum(data);
   ```
 
-  This library is being tested with [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) in mind, but it may also work with other iterables.
+  This library is being made with [maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)* in mind, but it may also work with other iterables.
 
 - Call a `bore` chart on your SVG selection:
 
@@ -76,6 +76,8 @@ In addition to providing chart types, `bore` also exports several useful utility
   Using other chart types will follow a nearly identical pattern, though the functions that can be chained to a chart type may differ from chart to chart. Refer to the [API Reference](#api-reference) for more details or take a look at the [examples](./examples/).
 
 <!-- Make a note of redrawing, small multiples, resizing -->
+
+\* I initially chose maps over objects because I felt it'd be less ergonomic to have to specify an x or y accessor. However, it may be preferable to specify accessors in some chart types. I have not done research into the performance benefits of maps or objects.
 
 ## [API Reference](#api-reference)
 
