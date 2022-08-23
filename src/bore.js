@@ -9,6 +9,7 @@ export { default as StackedBarChart } from "./graphic/StackedBarChart";
 export { default as StackedColumnChart } from "./graphic/StackedColumnChart";
 export { default as LineChart } from "./graphic/LineChart";
 export { default as ScatterPlot } from "./graphic/ScatterPlot";
+export { default as SankeyDiagram } from "./graphic/SankeyDiagram";
 
 const build = (chart) => chart.draw.bind(chart);
 
