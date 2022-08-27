@@ -13,6 +13,11 @@ module.exports = {
   plugins: ["prettier"],
   rules: {
     "no-var": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "template-curly-spacing": "error",
+    "prefer-arrow-callback": "error",
+    "arrow-spacing": "error",
     eqeqeq: "error",
     "prettier/prettier": [
       "error",
