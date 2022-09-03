@@ -9,6 +9,7 @@ export default class SankeyDiagram extends Visual {
     this.margin({ left: 0, right: 0, top: 10, bottom: 10 });
     this.resize(true);
     this.redraw(false);
+    this.label(null);
   }
 
   draw(selections) {
@@ -47,13 +48,31 @@ export default class SankeyDiagram extends Visual {
 
         const graph = sankeyGenerator(data);
 
-        links
+        const ls = links
           .selectAll(".link")
           .data(graph.links)
           .join("path")
           .attr("class", "link")
           .attr("d", sankeyLinkHorizontal())
           .attr("stroke-width", (d) => d.width);
+
+        const title = this.label();
+
+        if (title) {
+          ls.each(function () {
+            const link = select(this);
+            const s = link.select("title");
+            (s.empty() ? link.append("title") : s).text(title);
+          });
+        }
+
+        ls.on("mouseover", function () {
+          select(this).attr("stroke", "steelblue");
+        });
+
+        ls.on("mouseout", function () {
+          select(this).attr("stroke", "gray");
+        });
 
         nodes
           .selectAll(".node")
