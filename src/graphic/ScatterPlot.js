@@ -12,15 +12,13 @@ export default class ScatterPlot extends Visual {
     this.resize(true);
     this.redraw(false);
     // this.wrappx();
-    this.xAxis(
-      function (scale) {
-        return (g) => {
-          const axis = axisBottom(scale).ticks(this.getResponsiveWidth() / 80);
-          const selection = this.getSelectionWithRedrawContext(g);
-          selection.call(axis);
-        };
-      }.bind(this)
-    );
+    this.xAxis((scale) => {
+      return (g) => {
+        const axis = axisBottom(scale).ticks(this.getResponsiveWidth() / 80);
+        const selection = this.getSelectionWithRedrawContext(g);
+        selection.call(axis);
+      };
+    });
     this.yAxis(yAxisLeft);
 
     this.x = local();
@@ -55,9 +53,10 @@ export default class ScatterPlot extends Visual {
         .attr("class", "scatter-plot");
       this.svg = svg;
 
-      this.appendOnce("g", "y-axis")
-        .call(this.yAxis().bind(this)(this.y.get(node)))
-        .attr("transform", `translate(${left}, 0)`);
+      const yAxisGroup = this.appendOnce("g", "y-axis").attr(
+        "transform",
+        `translate(${left}, 0)`
+      );
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
         "transform",
@@ -79,6 +78,7 @@ export default class ScatterPlot extends Visual {
 
         const lx = this.x.get(node).range([left, w - right]);
         xAxisGroup.call(this.xAxis().bind(this)(lx));
+        yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         circles.attr("cx", (d) => lx(d[0]));
       };

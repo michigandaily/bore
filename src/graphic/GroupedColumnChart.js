@@ -66,9 +66,10 @@ export default class GroupedColumnChart extends Visual {
         .attr("class", "grouped-column-chart");
       this.svg = svg;
 
-      this.appendOnce("g", "y-axis")
-        .call(this.yAxis().bind(this)(this.y.get(node)))
-        .attr("transform", `translate(${left}, 0)`);
+      const yAxisGroup = this.appendOnce("g", "y-axis").attr(
+        "transform",
+        `translate(${left}, 0)`
+      );
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
         "transform",
@@ -101,6 +102,7 @@ export default class GroupedColumnChart extends Visual {
         this.x1.range([0, this.x0.bandwidth()]);
 
         xAxisGroup.call(this.xAxis().bind(this)(this.x0));
+        yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         groups.attr("transform", (d) => `translate(${this.x0(d[0])}, 0)`);
         bars.attr("x", (d) => this.x1(d[0])).attr("width", this.x1.bandwidth());

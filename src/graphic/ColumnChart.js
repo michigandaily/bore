@@ -66,9 +66,10 @@ export default class ColumnChart extends Visual {
         .attr("class", "column-chart");
       this.svg = svg;
 
-      this.appendOnce("g", "y-axis")
-        .call(this.yAxis().bind(this)(this.y.get(node)))
-        .attr("transform", `translate(${left}, 0)`);
+      const yAxisGroup = this.appendOnce("g", "y-axis").attr(
+        "transform",
+        `translate(${left}, 0)`
+      );
 
       const xAxisGroup = this.appendOnce("g", "x-axis").attr(
         "transform",
@@ -93,6 +94,7 @@ export default class ColumnChart extends Visual {
 
         this.x.range([left, w - right]);
         xAxisGroup.call(this.xAxis().bind(this)(this.x));
+        yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         bars.attr("x", (d) => this.x(d[0])).attr("width", this.x.bandwidth());
         labels.attr("x", (d) => this.x(d[0]) + this.x.bandwidth() / 2);

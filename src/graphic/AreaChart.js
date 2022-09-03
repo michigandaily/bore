@@ -67,9 +67,7 @@ export default class AreaChart extends Visual {
       this.svg = svg;
 
       const yAxisGroup = this.appendOnce("g", "y-axis");
-      yAxisGroup
-        .attr("transform", `translate(${left}, 0)`)
-        .call(this.yAxis().bind(this)(this.y.get(node)));
+      yAxisGroup.attr("transform", `translate(${left}, 0)`);
 
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
@@ -107,6 +105,7 @@ export default class AreaChart extends Visual {
           this.x(this.multiple ? Array.from(data.keys())[i] : d[0])
         );
         xAxisGroup.call(this.xAxis().bind(this)(this.x));
+        yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         this.getSelectionWithRedrawContext(path)
           .attr("d", areaGenerator)

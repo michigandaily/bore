@@ -71,10 +71,10 @@ export default class LineChart extends Visual {
         .attr("class", "line-chart");
       this.svg = svg;
 
-      const yAxisGroup = this.appendOnce("g", "y-axis");
-      yAxisGroup
-        .attr("transform", `translate(${left}, 0)`)
-        .call(this.yAxis().bind(this)(this.y.get(node)));
+      const yAxisGroup = this.appendOnce("g", "y-axis").attr(
+        "transform",
+        `translate(${left}, 0)`
+      );
 
       const xAxisGroup = this.appendOnce("g", "x-axis");
       xAxisGroup.attr("transform", `translate(0, ${this.height() - bottom})`);
@@ -105,6 +105,7 @@ export default class LineChart extends Visual {
         const lx = this.x.range([left, w - right]);
         lineGenerator.x((v) => lx(v[0]));
         xAxisGroup.call(this.xAxis().bind(this)(lx));
+        yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         this.getSelectionWithRedrawContext(path)
           .attr("d", (d) => lineGenerator(this.multiple ? d[1] : d))
