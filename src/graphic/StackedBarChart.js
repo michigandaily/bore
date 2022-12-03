@@ -64,7 +64,8 @@ export default class StackedBarChart extends Visual {
         .call(this.yAxis().bind(this)(this.y))
         .call((g) => {
           const text = g.selectAll(".tick text");
-          left += wrap(text, this.wrappx());
+          const shift = wrap(text, this.wrappx());
+          left = shift + 5;
         })
         .attr("transform", `translate(${left}, 0)`);
 

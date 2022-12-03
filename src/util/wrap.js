@@ -1,60 +1,86 @@
 import { select } from "d3";
 
-const length = (el) => el.node().getComputedTextLength();
-
 // This function is adapted from a Mike Bostock implementation of text wrapping
 // https://bl.ocks.org/mbostock/7555321
-const wrap = (selection, w) => {
-  let maxTextL = 0;
-  let maxSpanL = 0;
-  let l;
+const wrap = (selection, allottedWidth) => {
+  const textElements = selection.nodes();
 
-  const lencomp = (text, context) => {
-    l = length(text);
-    return Math.max(l, context);
-  };
+  let pixelsToWrapAt = Math.max(
+    ...textElements
+      .filter((element) => element.textContent.split(/\s+/).length === 1)
+      .map((element) => element.getComputedTextLength()),
+    allottedWidth
+  );
 
-  selection.each(function () {
-    const text = select(this);
+  textElements.forEach((element) => {
+    const words = element.textContent.split(/\s+/).reverse();
 
-    // get the maximum possible length of a label
-    maxTextL = lencomp(text, maxTextL);
+    if (words.length === 1) {
+      return;
+    }
 
-    const words = text.text().split(/\s+/).reverse();
-    if (words.length === 1) return;
-    let word;
-    let line = [];
-    const x = text.attr("x");
-    const y = text.attr("y");
-    let tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
+    const clone = select(element).clone();
+    let tspan = clone
+      .append("tspan")
+      .attr("x", clone.attr("x"))
+      .attr("y", 0)
+      .attr("dy", clone.attr("dy"));
 
-    while ((word = words.pop())) {
+    const height = 16.5;
+
+    let word = String();
+    let line = Array();
+    let maximumSpanLengthNecessary = 0;
+    while (words.length > 0) {
+      word = words.pop();
       line.push(word);
       tspan.text(line.join(" "));
 
-      l = length(tspan);
-      if (l > w) {
-        tspan.attr("y", text.attr("y") - 5);
+      const lineLength = tspan.node().getComputedTextLength();
+      if (lineLength > pixelsToWrapAt) {
+        if (line.length === 1) {
+          tspan.attr("y", `${tspan.attr("y")}`).text(line.join(" "));
+          maximumSpanLengthNecessary = Math.max(
+            maximumSpanLengthNecessary,
+            tspan.node().getComputedTextLength()
+          );
+          continue;
+        }
         line.pop();
-        tspan.text(line.join(" "));
-
-        // get the maximum length of a line
-        maxSpanL = lencomp(tspan, maxSpanL);
+        tspan
+          .attr("y", `-${height / 3 + Number(tspan.attr("y"))}`)
+          .text(line.join(" "));
+        maximumSpanLengthNecessary = Math.max(
+          maximumSpanLengthNecessary,
+          tspan.node().getComputedTextLength()
+        );
 
         line = [word];
-        tspan = text
+        tspan = clone
           .append("tspan")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("dy", "1em")
+          .attr("x", clone.attr("x"))
+          .attr("y", `${height / 3 + clone.attr("y")}`)
+          .attr("dy", clone.attr("dy"))
           .text(word);
 
-        maxSpanL = lencomp(tspan, maxSpanL);
+        maximumSpanLengthNecessary = Math.max(
+          maximumSpanLengthNecessary,
+          tspan.node().getComputedTextLength()
+        );
+      } else {
+        maximumSpanLengthNecessary = Math.max(
+          maximumSpanLengthNecessary,
+          lineLength
+        );
       }
+
+      pixelsToWrapAt = Math.max(pixelsToWrapAt, maximumSpanLengthNecessary);
     }
+
+    select(element).remove();
   });
 
-  return maxSpanL && maxSpanL < maxTextL ? maxSpanL : maxTextL;
+  return pixelsToWrapAt;
 };
 
 export default wrap;
