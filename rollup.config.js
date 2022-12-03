@@ -1,5 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
-import { terser } from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
 import scss from "rollup-plugin-scss";
 import pkg from "./package.json";
 
