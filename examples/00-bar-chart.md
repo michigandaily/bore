@@ -3,10 +3,10 @@
 Here's a basic bar chart:
 
 ```javascript
-import * as d3 from "d3";
+import { select } from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 const draw = () => {
-  const figure = d3.select("figure");
+  const figure = select("figure");
 
   const data = new Map()
     .set("A", 5)
@@ -93,15 +93,15 @@ Here's how we can still use `BarChart`.
 Here's it all put together:
 
 ```javascript
-import * as d3 from "d3";
+import { csv, autoType, select } from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 import datafile from "../data/data.csv";
 
 const draw = async () => {
-  const csvdata = await d3.csv(datafile, d3.autoType);
+  const csvdata = await csv(datafile, autoType);
   const data = csvdata.map((d) => [d.key, d.value]);
 
-  const figure = d3.select("figure");
+  const figure = select("figure");
   figure.append("svg")
     .datum(new Map(data))
     .call(

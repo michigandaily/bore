@@ -20,15 +20,15 @@ G,20
 and JavaScript code from the the last example:
 
 ```javascript
-import * as d3 from "d3";
+import { csv, autoType, select } from "d3";
 import { build, BarChart } from "@michigandaily/bore";
 import datafile from "../data/data.csv";
 
 const draw = async () => {
-  const csvdata = await d3.csv(datafile, d3.autoType);
+  const csvdata = await csv(datafile, autoType);
   const data = csvdata.map((d) => [d.key, d.value]);
 
-  const figure = d3.select("figure");
+  const figure = select("figure");
   figure.append("svg")
     .datum(new Map(data))
     .call(

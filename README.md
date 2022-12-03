@@ -64,7 +64,7 @@ In addition to providing chart types, `bore` also exports several useful utility
         .color(color)
         .height(175)
         .label(d => `${d[1].toPrecision(3)}%`)
-        .wrappx(75);
+        .wrappx(75)
     )
   );
   ```
