@@ -13,7 +13,7 @@ export default class SankeyDiagram extends Visual {
     this.redraw(false);
     this.label(null);
 
-    this.#nodeSort(null);
+    this.nodeSort(null);
   }
 
   nodeSort(s) {
