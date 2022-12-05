@@ -3,6 +3,8 @@ import { sankey, sankeyLinkHorizontal, sankeyCenter } from "d3-sankey";
 import Visual from "./Visual";
 
 export default class SankeyDiagram extends Visual {
+  #nodeSort;
+
   constructor() {
     super();
     this.height(500);
@@ -10,6 +12,12 @@ export default class SankeyDiagram extends Visual {
     this.resize(true);
     this.redraw(false);
     this.label(null);
+
+    this.#nodeSort(null);
+  }
+
+  nodeSort(s) {
+    return arguments.length ? ((this.#nodeSort = s), this) : this.#nodeSort;
   }
 
   draw(selections) {
@@ -24,7 +32,7 @@ export default class SankeyDiagram extends Visual {
       const sankeyGenerator = sankey()
         .nodeId((d) => d.id)
         .nodeAlign(sankeyCenter)
-        .nodeSort(null);
+        .nodeSort(this.nodeSort());
 
       const links = this.appendOnce("g", "link-group")
         .attr("stroke-opacity", 0.5)
