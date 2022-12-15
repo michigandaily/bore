@@ -107,9 +107,18 @@ export default class LineChart extends Visual {
         xAxisGroup.call(this.xAxis().bind(this)(lx));
         yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
-        this.getSelectionWithRedrawContext(path)
-          .attr("d", (d) => lineGenerator(this.multiple ? d[1] : d))
-          .attr("stroke", this.color());
+        const s = this.getSelectionWithRedrawContext(path);
+        s.attr("stroke", this.color());
+
+        if (this.redraw()) {
+          s.attrTween("d", (d) => {
+            const previous = path.attr("d");
+            const current = lineGenerator(this.multiple ? d[1] : d);
+            return interpolatePath(previous, current);
+          });
+        } else {
+          s.attr("d", (d) => lineGenerator(this.multiple ? d[1] : d));
+        }
       };
 
       render();
