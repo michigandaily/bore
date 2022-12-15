@@ -1,6 +1,7 @@
 import { select, local, scaleLinear, max, sum, scaleBand, stack } from "d3";
 import { xAxisBottom, yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
+import wrap from "../util/wrapBottom";
 
 export default class StackedColumnChart extends Visual {
   constructor() {
@@ -40,7 +41,9 @@ export default class StackedColumnChart extends Visual {
   draw(selections) {
     selections.each((data, i, selection) => {
       this.keys = Object.keys(data.values().next().value);
-      const { top, left, bottom, right } = this.margin();
+      const { top, left, right } = this.margin();
+      let { bottom } = this.margin();
+
       const node = selection[i];
 
       const svg = select(node)
@@ -48,21 +51,27 @@ export default class StackedColumnChart extends Visual {
         .attr("class", "stacked-column-chart");
       this.svg = svg;
 
-      this.x = this.xScale() ?? this.defaultXScale(data);
-
-      this.y
-        .set(node, this.yScale() ?? this.defaultYScale(data))
-        .range([this.height() - bottom, top]);
-
       const yAxisGroup = this.appendOnce("g", "y-axis").attr(
         "transform",
         `translate(${left}, 0)`
       );
 
-      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
-        "transform",
-        `translate(0, ${this.height() - bottom})`
-      );
+      this.x = this.xScale() ?? this.defaultXScale(data);
+
+      const shiftXAxis = (g) => {
+        const text = g.selectAll(".tick text");
+        const shift = wrap(text, this.wrappx());
+        bottom = shift + 5;
+      };
+
+      const xAxisGroup = this.appendOnce("g", "x-axis")
+        .call(this.xAxis().bind(this)(this.x))
+        .call(shiftXAxis)
+        .attr("transform", `translate(0, ${this.height() - bottom})`);
+
+      this.y
+        .set(node, this.yScale() ?? this.defaultYScale(data))
+        .range([this.height() - bottom, top]);
 
       const series = stack().keys(this.keys)(data.values());
 
@@ -82,7 +91,7 @@ export default class StackedColumnChart extends Visual {
 
         svg.attr("width", w);
         this.x.range([left, w - right]);
-        xAxisGroup.call(this.xAxis().bind(this)(this.x));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x)).call(shiftXAxis);
         yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         rect
