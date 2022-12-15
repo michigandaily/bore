@@ -6,9 +6,7 @@
   "main": "src/bore.js",
   "module": "src/bore.js",
   "scripts": {
-    "prepare": "husky install",
-    "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -24,19 +22,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "d3": "^7.6.1",
+    "d3": "^7.7.0",
     "d3-sankey": "^0.12.3"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.1.0",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^7.0.4",
-    "prettier": "^2.7.1",
-    "rollup": "^3.5.1",
-    "rollup-plugin-scss": "4.0.0",
-    "sass": "^1.56.1"
+    "husky": "^8.0.2",
+    "prettier": "^2.8.1"
   }
 }
