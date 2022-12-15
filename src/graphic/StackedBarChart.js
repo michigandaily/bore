@@ -8,7 +8,7 @@ import {
   stack,
   axisLeft,
 } from "d3";
-import wrap from "../util/wrap";
+import wrap from "../util/wrapLeft";
 import { xAxisTop } from "../util/axis";
 import Visual from "./Visual";
 

@@ -1,6 +1,6 @@
 import { local, select, scaleLinear, scaleBand, max, axisLeft } from "d3";
 import Visual from "./Visual";
-import wrap from "../util/wrap";
+import wrap from "../util/wrapLeft";
 import { xAxisTop } from "../util/axis";
 import "../css/bar-chart.scss";
 export default class BarChart extends Visual {
