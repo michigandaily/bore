@@ -2,6 +2,8 @@ import { local, max, scaleLinear, select, scaleBand } from "d3";
 import Visual from "./Visual";
 import { xAxisBottom, yAxisLeft } from "../util/axis";
 import "../css/grouped-column-chart.scss";
+import wrap from "../util/wrapBottom";
+
 export default class GroupedColumnChart extends Visual {
   constructor() {
     super();
@@ -49,17 +51,11 @@ export default class GroupedColumnChart extends Visual {
 
   draw(selections) {
     selections.each((data, i, selection) => {
-      const { top, right, bottom, left } = this.margin();
+      const { top, right, left } = this.margin();
+      let { bottom } = this.margin();
 
       const node = selection[i];
       const keys = Object.keys(data.values().next().value);
-
-      this.x0 = scaleBand().domain(data.keys()).padding(0.3);
-      this.x1 = scaleBand().domain(keys);
-
-      this.y
-        .set(node, this.yScale() ?? this.defaultYScale(data))
-        .range([this.height() - bottom, top]);
 
       const svg = select(node)
         .attr("height", this.height())
@@ -71,10 +67,23 @@ export default class GroupedColumnChart extends Visual {
         `translate(${left}, 0)`
       );
 
-      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
-        "transform",
-        `translate(0, ${this.height() - bottom})`
-      );
+      this.x0 = scaleBand().domain(data.keys()).padding(0.3);
+      this.x1 = scaleBand().domain(keys);
+
+      const shiftXAxis = (g) => {
+        const text = g.selectAll(".tick text");
+        const shift = wrap(text, this.wrappx());
+        bottom = shift + 5;
+      };
+
+      const xAxisGroup = this.appendOnce("g", "x-axis")
+        .call(this.xAxis().bind(this)(this.x0))
+        .call(shiftXAxis)
+        .attr("transform", `translate(0, ${this.height() - bottom})`);
+
+      this.y
+        .set(node, this.yScale() ?? this.defaultYScale(data))
+        .range([this.height() - bottom, top]);
 
       const groups = svg
         .selectAll(".bar-group")
@@ -101,7 +110,7 @@ export default class GroupedColumnChart extends Visual {
         this.x0.range([left, w - right]);
         this.x1.range([0, this.x0.bandwidth()]);
 
-        xAxisGroup.call(this.xAxis().bind(this)(this.x0));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x0)).call(shiftXAxis);
         yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         groups.attr("transform", (d) => `translate(${this.x0(d[0])}, 0)`);
