@@ -2,6 +2,8 @@ import { local, scaleBand, scaleLinear, max, select } from "d3";
 import { xAxisBottom, yAxisLeft } from "../util/axis";
 import Visual from "./Visual";
 import "../css/column-chart.scss";
+import wrap from "../util/wrapBottom";
+
 export default class ColumnChart extends Visual {
   constructor() {
     super();
@@ -52,14 +54,10 @@ export default class ColumnChart extends Visual {
 
   draw(selections) {
     selections.each((data, i, selection) => {
-      const { top, right, bottom, left } = this.margin();
+      const { top, right, left } = this.margin();
+      let { bottom } = this.margin();
 
       const node = selection[i];
-
-      this.x = this.xScale() ?? this.defaultXScale(data);
-      this.y
-        .set(node, this.yScale() ?? this.defaultYScale(data))
-        .range([this.height() - bottom, top]);
 
       const svg = select(node)
         .attr("height", this.height())
@@ -71,10 +69,23 @@ export default class ColumnChart extends Visual {
         `translate(${left}, 0)`
       );
 
-      const xAxisGroup = this.appendOnce("g", "x-axis").attr(
-        "transform",
-        `translate(0, ${this.height() - bottom})`
-      );
+      this.x = this.xScale() ?? this.defaultXScale(data);
+      this.x.range([left, this.getResponsiveWidth() - right]);
+
+      const shiftXAxis = (g) => {
+        const text = g.selectAll(".tick text");
+        const shift = wrap(text, this.wrappx());
+        bottom = shift + 5;
+      };
+
+      const xAxisGroup = this.appendOnce("g", "x-axis")
+        .call(this.xAxis().bind(this)(this.x))
+        .call(shiftXAxis)
+        .attr("transform", `translate(0, ${this.height() - bottom})`);
+
+      this.y
+        .set(node, this.yScale() ?? this.defaultYScale(data))
+        .range([this.height() - bottom, top]);
 
       const bars = svg
         .selectAll(".bar")
@@ -93,7 +104,7 @@ export default class ColumnChart extends Visual {
         svg.attr("width", w);
 
         this.x.range([left, w - right]);
-        xAxisGroup.call(this.xAxis().bind(this)(this.x));
+        xAxisGroup.call(this.xAxis().bind(this)(this.x)).call(shiftXAxis);
         yAxisGroup.call(this.yAxis().bind(this)(this.y.get(node)));
 
         bars.attr("x", (d) => this.x(d[0])).attr("width", this.x.bandwidth());
