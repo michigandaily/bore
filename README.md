@@ -89,11 +89,8 @@ Work on a branch if you plan on adding something to `bore` -- the `main` branch 
 
 ### Install `bore` and `cookie`
 
-1. Clone `cookie`.
-2. Inside `cookie`, clone `bore`.
-   - This is necessary for Parcel 2 hot reloading. Be careful of the nested repositories here. If it helps, you may want to run `rm -rf .git` in `cookie`.
-3. In `cookie`, run `make`.
-4. In `bore`, run `yarn`.
+1. Clone `cookie` and `bore` into the same directory.
+2. Run `yarn install` in `cookie` and in `bore`.
 
 ### Link `bore` and `cookie`
 
