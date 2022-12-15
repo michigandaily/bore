@@ -121,7 +121,6 @@ When finished developing, unlink the repositories.
 
 ### Git and releases
 
-- Run `yarn build` to create a minified version of `bore` in the `dist` directory.
 - Update the version in `package.json` according to [semantic versioning](https://semver.org/).
 - Create a pull request to `main`.
 - Once merged, create a new tag and release with the same version number in `package.json` prefxied with `v`.
