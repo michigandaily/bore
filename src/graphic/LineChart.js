@@ -111,8 +111,8 @@ export default class LineChart extends Visual {
         s.attr("stroke", this.color());
 
         if (this.redraw()) {
-          s.attrTween("d", function (d) {
-            const previous = select(this).attr("d");
+          s.attrTween("d", (d) => {
+            const previous = path.attr("d");
             const current = lineGenerator(this.multiple ? d[1] : d);
             return interpolatePath(previous, current);
           });
