@@ -84,7 +84,7 @@ export default class BarChart extends Visual {
 
       const bars = svg
         .selectAll(".bar")
-        .data(data)
+        .data(data, (d) => d[0])
         .join("rect")
         .call(this.bar.bind(this));
 
@@ -103,6 +103,7 @@ export default class BarChart extends Visual {
 
         const min = lx.domain()[0];
 
+        bars.attr("x", lx(min));
         this.getSelectionWithRedrawContext(bars)
           .attr("x", lx(min))
           .attr("width", (d) => lx(d[1]) - lx(min));

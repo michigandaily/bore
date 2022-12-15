@@ -8,6 +8,7 @@ import {
   line,
   curveLinear,
 } from "d3";
+import { interpolatePath } from "d3-interpolate-path";
 import Visual from "./Visual";
 import { xAxisBottom, yAxisLeft } from "../util/axis";
 import "../css/line-chart.scss";
@@ -83,7 +84,7 @@ export default class LineChart extends Visual {
       if (this.multiple) {
         path = svg
           .selectAll(".line-path")
-          .data(data)
+          .data(data, (d) => d[0])
           .join("path")
           .attr(
             "class",

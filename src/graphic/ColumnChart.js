@@ -89,7 +89,7 @@ export default class ColumnChart extends Visual {
 
       const bars = svg
         .selectAll(".bar")
-        .data(data)
+        .data(data, (d) => d[0])
         .join("rect")
         .call(this.bar.bind(this));
 
