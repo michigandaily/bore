@@ -86,6 +86,8 @@ export default class Visual {
   }
 
   getSelectionWithRedrawContext(selection) {
-    return this.redraw() ? selection.transition().duration(this.duration()) : selection;
+    return this.redraw()
+      ? selection.transition().duration(this.duration())
+      : selection;
   }
 }

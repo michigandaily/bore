@@ -37,7 +37,7 @@ In addition to providing chart types, `bore` also exports several useful utility
   yarn add michigandaily/bore
   ```
 
-   You can use a specific version or branch of `bore` by adding a `#` to the end and specifying a version or branch (e.g., `#v3.0.0`).
+   You can use a specific version or branch of `bore` by adding a `#` to the end and specifying a version or branch (e.g., `#v3.0.1`).
 
 - Import `bore`:
 

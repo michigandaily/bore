@@ -1,6 +1,6 @@
 {
   "name": "@michigandaily/bore",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The Michigan Daily D3 graphing library",
   "type": "module",
   "main": "src/bore.js",
@@ -22,15 +22,15 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "d3": "^7.7.0",
+    "d3": "^7.8.2",
     "d3-interpolate-path": "^2.3.0",
     "d3-sankey": "^0.12.3"
   },
   "devDependencies": {
-    "eslint": "^8.29.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.2",
-    "prettier": "^2.8.1"
+    "husky": "^8.0.3",
+    "prettier": "^2.8.4"
   }
 }
