@@ -13,6 +13,7 @@ export default class Visual {
   #resize;
   #redraw;
   #wrappx;
+  #duration;
 
   width(w) {
     return arguments.length ? ((this.#width = w), this) : this.#width;
@@ -64,6 +65,10 @@ export default class Visual {
     return arguments.length ? ((this.#wrappx = px), this) : this.#wrappx;
   }
 
+  duration(d) {
+    return arguments.length ? ((this.#duration = d), this) : this.#duration;
+  }
+
   appendOnce(element, classSelector) {
     return this.redraw()
       ? this.svg.select(`.${classSelector}`)
@@ -81,6 +86,6 @@ export default class Visual {
   }
 
   getSelectionWithRedrawContext(selection) {
-    return this.redraw() ? selection.transition().duration(1000) : selection;
+    return this.redraw() ? selection.transition().duration(this.duration()) : selection;
   }
 }
